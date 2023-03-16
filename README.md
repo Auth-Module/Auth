@@ -66,10 +66,10 @@ go to your github branch , as per this list:
 4. sanjay : https://github.com/Auth-Module/Auth/tree/sanjay
 5. shammi : https://github.com/Auth-Module/Auth/tree/shammi
 
-you will see message like : `This branch is x commits ahead of main.`
-click on : `Contribute`
-click on : `Open Pull Request`
-create pull request : by putting some message about the task
+you will see message like : `This branch is x commits ahead of main.`  <br />
+click on : `Contribute`  <br />
+click on : `Open Pull Request`  <br />
+create pull request : by putting some message about the task  <br />
 choose Reviewers 
 
 
