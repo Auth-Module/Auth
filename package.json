@@ -1,5 +1,5 @@
 {
-  "name": "project",
+  "name": "auth",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -16,5 +16,13 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-microsoft": "^1.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.36.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "2.8.4"
   }
 }
