@@ -38,6 +38,7 @@ git checkout --track origin/shammi
 
 ### Sync remort git to local development
 
+
 ##### step 1
 first pull recent code from main branch : `git pull --rebase origin main` <br />
 
