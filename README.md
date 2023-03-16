@@ -57,5 +57,19 @@ git commit -m " fix: error fixed [AM-555] "
 git push
 
 ```
+
 ##### step 3
-go to your git hub : https://github.com/Auth-Module/Auth
+go to your github branch , as per this list:
+1. subhadip :  https://github.com/Auth-Module/Auth/tree/subhadip
+2. divyam : https://github.com/Auth-Module/Auth/tree/divyam
+3. harshit : https://github.com/Auth-Module/Auth/tree/harshit
+4. sanjay : https://github.com/Auth-Module/Auth/tree/sanjay
+5. shammi : https://github.com/Auth-Module/Auth/tree/shammi
+
+you will see message like : `This branch is x commits ahead of main.`
+click on : `Contribute`
+click on : `Open Pull Request`
+create pull request : by putting some message about the task
+choose Reviewers 
+
+
