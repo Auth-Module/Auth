@@ -4,9 +4,15 @@ Authentication module
 
 ## Project linting dependencies
 we are using ESLint and Prettier for code analysis and formatting.  <br />
-install 2 VS code extensions : 
+
+Install 2 VS code extensions : 
 1. ESLint
 2. Prettier
+
+some rules: 
+1. make ; sign at the end of teh line
+2. user cammelCase not snake_case
+
 
 ## Git related rules
 
