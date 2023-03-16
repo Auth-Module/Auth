@@ -2,6 +2,11 @@
 
 Authentication module
 
+## Project linting dependencies
+we are using ESLint and Prettier for code analysis and formatting.  <br />
+install 2 VS code extensions : 
+1. ESLint
+2. Prettier
 
 ## Git related rules
 
@@ -20,7 +25,7 @@ current available branch names are :
 5. shammi : https://github.com/Auth-Module/Auth/tree/shammi
 6. main : < we can not push code to main without code review >
 
-#### for the first time fetch branch
+#### For the first time fetch branch
 git fetch origin <remote_branch_name>   <br />
 git checkout --track origin/<remote_branch_name> <br />
 example code: 
@@ -31,7 +36,8 @@ git checkout --track origin/shammi
 
 ```
 
-### sync remort git to local development
+### Sync remort git to local development
+
 
 ##### step 1
 first pull recent code from main branch : `git pull --rebase origin main` <br />
