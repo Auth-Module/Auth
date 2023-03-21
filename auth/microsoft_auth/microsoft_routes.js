@@ -1,15 +1,14 @@
-/* eslint-disable eqeqeq */
 const express = require('express');
+
+const router = express.Router();
 const axios = require('axios');
 const passport = require('passport');
 const MicrosoftStrategy = require('passport-microsoft').Strategy;
 
-const router = express.Router();
-
 passport.use(
     new MicrosoftStrategy(
         {
-            callbackURL: `http://localhost:3000/auth/microsoft/redirect`,
+            callbackURL: 'http://localhost:3000/auth/microsoft/redirect',
             clientID: process.env.MICROSOFT_CLIENT_ID,
             clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
             scope: ['user.read']
@@ -23,16 +22,13 @@ passport.use(
                 .then((response) => {
                     const microsoftUserId = response.data.id;
                     const passportUserId = profile.id;
-                    if (microsoftUserId == passportUserId) {
+                    if (microsoftUserId === passportUserId) {
                         const passportUserEmail = profile.emails && profile.emails[0].value;
                         return done(null, { userId: microsoftUserId, email: passportUserEmail });
                     }
                     return done('Auth Invalid', null);
                 })
-                .catch((err) => {
-                    console.log(err);
-                    return done('Auth Invalid', null);
-                });
+                .catch((err) => done(err, null));
         }
     )
 );
@@ -43,7 +39,7 @@ router.get(
     '/redirect',
     passport.authenticate('microsoft', {
         session: false,
-        failureRedirect: `http://localhost:3000/auth`
+        failureRedirect: 'http://localhost:3000/auth'
     }),
     (req, res) => {
         try {
