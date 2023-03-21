@@ -40,7 +40,6 @@ current available branch names are :
 4. sanjay : https://github.com/Auth-Module/Auth/tree/sanjay
 5. shammi : https://github.com/Auth-Module/Auth/tree/shammi
 6. main : < we can not push code to main without code review >
-6. main : < we can not push code to main without code review >
 
 #### For the first time fetch branch
 #### For the first time fetch branch
