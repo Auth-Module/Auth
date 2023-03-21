@@ -1,4 +1,6 @@
+/* eslint-disable eqeqeq */
 const express = require('express');
+const axios = require('axios');
 const passport = require('passport');
 const MicrosoftStrategy = require('passport-microsoft').Strategy;
 
@@ -13,24 +15,43 @@ passport.use(
             scope: ['user.read']
         },
         (accessToken, refreshToken, profile, done) => {
-            const userId = profile.id;
-            const userEmail = profile.emails && profile.emails[0].value;
-            console.log('userId', userId);
-            console.log('user_email', userEmail);
-            return done(null, { userId, userEmail });
+            // curl -i -H "Authorization: Bearer ACCESS_TOKEN"
+            axios
+                .get('https://graph.microsoft.com/v1.0/me', {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                })
+                .then((response) => {
+                    const microsoftUserId = response.data.id;
+                    const passportUserId = profile.id;
+                    if (microsoftUserId == passportUserId) {
+                        const passportUserEmail = profile.emails && profile.emails[0].value;
+                        return done(null, { userId: microsoftUserId, email: passportUserEmail });
+                    }
+                    return done('Auth Invalid', null);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return done('Auth Invalid', null);
+                });
         }
     )
 );
 
 router.get('/', passport.authenticate('microsoft', { session: false }));
+
 router.get(
     '/redirect',
     passport.authenticate('microsoft', {
         session: false,
-        failureRedirect: `https://localhost:3000/auth`
+        failureRedirect: `http://localhost:3000/auth`
     }),
     (req, res) => {
-        res.send(req.user);
+        try {
+            res.send(req.user);
+        } catch (err) {
+            console.log('error', err);
+            res.send('login again');
+        }
     }
 );
 
