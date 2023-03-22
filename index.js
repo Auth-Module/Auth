@@ -10,11 +10,7 @@ app.get('/', (req, res) => {
     res.send('ping');
 });
 
-app.get('/auth', (req, res) => {
-    res.render('auth/index');
-});
-app.use('/auth/microsoft/', require('./auth/microsoft_auth/microsoft_routes'));
-app.use('/auth/google/', require('./auth/google_auth/google_routes'));
+app.use('/auth', require('./auth/index'));
 
 const port = 3000;
 app.listen(port, () => {
