@@ -8,7 +8,7 @@ const MicrosoftStrategy = require('passport-microsoft').Strategy;
 passport.use(
     new MicrosoftStrategy(
         {
-            callbackURL: 'http://localhost:3000/auth/microsoft/redirect',
+            callbackURL: `${process.env.SERVER_URL}/auth/microsoft/redirect`,
             clientID: process.env.MICROSOFT_CLIENT_ID,
             clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
             scope: ['user.read']
@@ -24,7 +24,11 @@ passport.use(
                     const passportUserId = profile.id;
                     if (microsoftUserId === passportUserId) {
                         const passportUserEmail = profile.emails && profile.emails[0].value;
-                        return done(null, { userId: microsoftUserId, email: passportUserEmail });
+                        return done(null, {
+                            socialId: `M-${microsoftUserId}`,
+                            email: passportUserEmail,
+                            socialMedia: 'microsoft'
+                        });
                     }
                     return done('Auth Invalid', null);
                 })
@@ -39,7 +43,7 @@ router.get(
     '/redirect',
     passport.authenticate('microsoft', {
         session: false,
-        failureRedirect: 'http://localhost:3000/auth'
+        failureRedirect: `${process.env.SERVER_URL}/auth`
     }),
     (req, res) => {
         try {
