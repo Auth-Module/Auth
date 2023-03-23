@@ -13,16 +13,24 @@ some rules:
 1. make ; sign at the end of teh line
 2. user cammelCase not snake_case
 
-## Project linting dependencies
-we are using ESLint and Prettier for code analysis and formatting.  <br />
+## Eslint setup
+run this : `npm init @eslint/config`
+1. How would you like to use ESLint? - To check syntax, find problems, and enforce code style
+2. What type of modules does your project use? - CommonJS (require/exports)
+3. Which framework does your project use? - None of these
+4. Does your project use TypeScript? - No
+5. Where does your code run? - Node
+6. How would you like to define a style for your project? - Use a popular style guide
+7. Which style guide do you want to follow? - Airbnb
+8. What format do you want your config file to be in? - JavaScript
 
-Install 2 VS code extensions : 
-1. ESLint
-2. Prettier
 
-some rules: 
-1. make ; sign at the end of teh line
-2. user cammelCase not snake_case
+### restart the ES-Lint server
+1. go to view in VS code
+2. click on "Command Pallet"
+3. search : "restart ESLint server"
+4. close VS Code and restart the laptop
+
 
 ## Git related rules
 
