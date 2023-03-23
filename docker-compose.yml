@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: auth
+    volumes: 
+      - ./mysqldata:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - auth
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - auth
+
+  
+networks:
+  auth:
+
+
+
+
+# docker-compose -f docker-compose.override.yml up -d
+# docker-compose up --build

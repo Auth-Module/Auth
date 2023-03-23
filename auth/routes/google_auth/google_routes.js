@@ -5,12 +5,14 @@ const router = express.Router();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+const { findOrCreate } = require('../../database/models/user');
+
 passport.use(
     new GoogleStrategy(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: `${process.env.PROJECT_BACKEND}/auth/google/redirect`
+            callbackURL: `${process.env.SERVER_URL}/auth/google/redirect`
         },
         (accessToken, refreshToken, profile, done) => {
             axios
@@ -21,9 +23,10 @@ passport.use(
                         profile.emails[0]?.verified === true
                     ) {
                         return done(null, {
-                            userId: profile.id,
+                            socialId: `G-${profile.id}`,
                             email: response.data.email,
-                            loginBy: 'google'
+                            socialMedia: 'google',
+                            name: profile.displayName
                         });
                     }
 
@@ -48,10 +51,15 @@ router.get(
     '/redirect',
     passport.authenticate('google', {
         session: false,
-        failureRedirect: 'http://localhost:3000/auth'
+        failureRedirect: `${process.env.SERVER_URL}/auth/login`
     }),
-    (req, res) => {
-        res.send(req.user);
+    async (req, res) => {
+        try {
+            const userdata = await findOrCreate(req.user);
+            res.send(userdata);
+        } catch (err) {
+            res.send(err);
+        }
     }
 );
 

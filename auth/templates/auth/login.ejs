@@ -22,7 +22,7 @@
                             <div class="card-body p-5">
                                 <form class="mb-3 mt-md-4">
                                     <h2 class="fw-bold mb-2 text-uppercase">My-Auth</h2>
-                                    <p class="mb-5">Please enter your login and password!</p>
+                                    <p class="mb-5">Please enter your email and password!</p>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email address</label>
                                         <input
@@ -45,7 +45,7 @@
                                             type="checkbox"
                                             id="showPassId"
                                         />
-                                        <label class="form-check-label" for="showPassId">
+                                        <label class="form-check-label" for="showPassId" style="margin-left: 8px;">
                                             Show password
                                         </label>
                                     </div>
@@ -76,7 +76,7 @@
                                     <div class="col">
                                         <p class="mb-0 text-center">
                                             Forget password? <br />
-                                            <a href="signup.html" class="text-primary fw-bold"
+                                            <a href="forget_password" class="text-primary fw-bold"
                                                 >Click here</a
                                             >
                                         </p>
@@ -84,7 +84,7 @@
                                     <div class="col">
                                         <p class="mb-0 text-center">
                                             No account? <br />
-                                            <a href="signup.html" class="text-primary fw-bold"
+                                            <a href="signup" class="text-primary fw-bold"
                                                 >Sign Up</a
                                             >
                                         </p>
@@ -115,10 +115,10 @@
                 },
                 methods: {
                     googleLogin: function () {
-                        window.location.href = window.location.href + '/google';
+                        window.location.href = window.location.href.replace("login", "google");
                     },
                     microsoftLogin: function () {
-                        window.location.href = window.location.href + '/microsoft';
+                        window.location.href = window.location.href.replace("login", "microsoft");
                     },
                 },
                 mounted: function () {}

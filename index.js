@@ -1,9 +1,17 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 
 const app = express();
 
-app.use('/static', express.static('static'));
+// connecting DB
+const connectDB = require('./auth/database/connectDB');
+
+connectDB();
+
+// static files and view engine
+app.use('/static', express.static(path.join(__dirname, 'auth/static')));
+app.set('views', path.join(__dirname, 'auth/templates'));
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
