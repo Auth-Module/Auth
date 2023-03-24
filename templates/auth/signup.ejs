@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+        />
+    </head>
+    <body>
+        <div class="vh-100 d-flex justify-content-center align-items-center">
+            <div class="container" id="app">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="border border-3 border-primary"></div>
+                        <div class="card bg-white shadow-lg">
+                            <div class="card-body p-5">
+                                <form class="mb-3 mt-md-4" @submit.prevent="registration">
+                                    <h2 class="fw-bold mb-2 text-uppercase">My-Auth</h2>
+                                    <p class="mb-4" v-if="error =='' ">
+                                        Create your account using email and password!
+                                    </p>
+                                    <p class="mb-4" style="color: red" v-else>
+                                        {{ error }}
+                                    </p>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Name</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Bob"
+                                            required
+                                            v-model="name"
+                                        />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email address</label>
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            placeholder="name@example.com"
+                                            required
+                                            v-model="email"
+                                        />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input
+                                            :type="password_Visisble ? 'text' : 'password' "
+                                            class="form-control"
+                                            placeholder="*******"
+                                            required
+                                            v-model="password"
+                                        />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label"
+                                            >repeat Password</label
+                                        >
+                                        <input
+                                            :type="password_Visisble ? 'text' : 'password' "
+                                            class="form-control"
+                                            placeholder="*******"
+                                            required
+                                            v-model="password2"
+                                        />
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="showPassId2"
+                                            v-on:click="changePasswordVisibility"
+                                            style="margin-top: 15px"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="showPassId2"
+                                            style="margin-left: 8px; margin-top: 10px"
+                                        >
+                                            Show password
+                                        </label>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button class="btn btn-outline-dark" type="submit">
+                                            Create Account
+                                        </button>
+                                    </div>
+                                </form>
+                                <hr class="my-4" />
+                                <div class="row">
+                                    <div class="col-6 d-flex justify-content-center my-2">
+                                        <button class="btn btn-outline-dark" @click="googleLogin">
+                                            <i class="fab fa-google me-2"></i> Sign in with Google
+                                        </button>
+                                    </div>
+                                    <div class="col-6 d-flex justify-content-center my-2">
+                                        <button
+                                            class="btn btn-outline-dark"
+                                            @click="microsoftLogin"
+                                        >
+                                            <i class="fab fa-microsoft me-2"></i> Sign in with
+                                            Microsoft
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4" />
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col">
+                                        <p class="mb-0 text-center">
+                                            already have account? <br />
+                                            <a
+                                                v-bind:href="baseURL+'/auth/login' "
+                                                class="text-primary fw-bold"
+                                                >LogIn</a
+                                            >
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://kit.fontawesome.com/d278adcdd4.js" crossorigin="anonymous"></script>
+        <script src="/static/vue.js"></script>
+        <script src="/static/axios.js"></script>
+
+        <script>
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        baseURL: '',
+                        name: '',
+                        email: '',
+                        password: '',
+                        password2: '',
+                        password_Visisble: false,
+                        error: ''
+                    };
+                },
+                methods: {
+                    changePasswordVisibility: function (auth_action) {
+                        this.password_Visisble = !this.password_Visisble;
+                    },
+                    googleLogin: function () {
+                        window.location.href = this.baseURL + '/auth/google';
+                    },
+                    microsoftLogin: function () {
+                        window.location.href = this.baseURL + '/auth/microsoft';
+                    },
+                    registration: async function () {
+                        try {
+                            console.log(this.email, this.password, this.password2);
+
+                            if (this.password != this.password2) {
+                                this.error += 'Password not match';
+                            } else if (this.password.length < 8 || this.password.length >= 20) {
+                                this.error += 'Password should be alteast 8 and max 20 charecter';
+                            } else {
+                                const post_url = this.baseURL + '/auth/email-pass/signup';
+                                const postData = {
+                                    name: this.name,
+                                    email: this.email,
+                                    password: this.password
+                                };
+                                const response = await axios.post(post_url, postData);
+                                console.log(response);
+                            }
+                        } catch (err) {
+                            if (err.response.data.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    }
+                },
+                mounted: function () {
+                    this.baseURL = '<%= baseURL %>';
+                    console.log(this.baseURL);
+                }
+            });
+            app.mount('#app');
+        </script>
+    </body>
+</html>
