@@ -8,7 +8,7 @@ const sendMail = async (subject, toEmail, htmlContent, textContent) => {
             service: 'hotmail',
             auth: {
                 user: process.env.OUTLOOK_EMAIL_ID,
-                pass: process.env.Sssdh123
+                pass: process.env.OUTLOOK_PASSWORD
             }
         });
 
