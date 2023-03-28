@@ -1,6 +1,18 @@
 const express = require('express');
+const session = require('../../session/index');
 
 const router = express.Router();
+
+//= ================== Auth Home Page =========================
+router.get('/', (req, res) => {
+    const sessionCookie = req.cookies.auth_session;
+    const sessionUser = session.getSessionUser(sessionCookie);
+    if (sessionUser) {
+        res.redirect('/');
+    } else {
+        res.redirect('/auth/login');
+    }
+});
 
 // ================== Rendering UI pages======================
 // 1. Login Page

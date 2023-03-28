@@ -77,7 +77,6 @@ const createUserByPassword = async (userInput) => {
             password: userInput.password,
             socialMedia: 'email_password'
         };
-
         let userDetails = await User.findOne({ where: { email: user.email } });
         if (userDetails) {
             if (userDetails.socialMedia !== 'email_password') {
@@ -91,12 +90,12 @@ const createUserByPassword = async (userInput) => {
             process.env.PASSWORD_ENCRYPTION,
             process.env.PASSWORD_ENCRYPTION_ROUND
         );
-        console.log('user', user);
 
         userDetails = await User.create(user);
         const userData = userDetails.toJSON();
         return removeItemFromUserData(userData);
     } catch (error) {
+        console.log('error');
         throw new Error(error.message);
     }
 };
@@ -128,10 +127,41 @@ const markUservalidated = async (id) => {
     }
 };
 
+const checkUserEmailPass = async (userInput) => {
+    try {
+        const userDetails = await User.findOne({ where: { email: userInput.email } });
+        if (!userDetails) {
+            return { errorMsg: 'User not exists' };
+        }
+        if (userDetails.socialMedia !== 'email_password') {
+            return { errorMsg: 'login using social media' };
+        }
+        if (!userDetails.validated) {
+            return { invalidMsg: 'Validate account before login', userid: userDetails.id };
+        }
+
+        const userInputPassHash = Sha512Encryption(
+            userInput.password,
+            process.env.PASSWORD_ENCRYPTION,
+            process.env.PASSWORD_ENCRYPTION_ROUND
+        );
+
+        if (userDetails.password === userInputPassHash) {
+            const { name, email, id } = userDetails;
+            return { name, email, id };
+        }
+        return { errorMsg: 'email or password not matched' };
+    } catch (error) {
+        console.log('error');
+        throw new Error(error.message);
+    }
+};
+
 module.exports = {
     User,
     findOrCreateUserBySocialMedia,
     createUserByPassword,
     findUserById,
-    markUservalidated
+    markUservalidated,
+    checkUserEmailPass
 };

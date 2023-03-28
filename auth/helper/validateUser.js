@@ -16,6 +16,26 @@ const isEmail = (input) => {
 
 const validationError = {
     isNumber: validateNumber,
+    login: (userdata) => {
+        const errorMsg = [];
+        // email validation
+        if (!userdata.email) {
+            errorMsg.push('Email is mandetory');
+        } else if (!isEmail(userdata.email)) {
+            errorMsg.push('Email is not valid');
+        }
+        // validate password
+        if (!userdata.password) {
+            errorMsg.push('Password is mandetory');
+        } else if (userdata.password.length >= 20 || userdata.password.length <= 8) {
+            errorMsg.push('Password should be alteast 8 and max 20 charecter');
+        }
+
+        if (errorMsg.length > 0) {
+            return errorMsg;
+        }
+        return null;
+    },
     registration: (userdata) => {
         const errorMsg = [];
 

@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const Sha512Encryption = (data, key, passwordRound = 1) => {
+const sha512Encryption = (data, key, passwordRound = 1) => {
     try {
         const round = parseInt(passwordRound, 10);
         let hashString = crypto
@@ -23,4 +23,4 @@ const Sha512Encryption = (data, key, passwordRound = 1) => {
     }
 };
 
-module.exports = { Sha512Encryption };
+module.exports = sha512Encryption;
