@@ -27,7 +27,8 @@ passport.use(
                         return done(null, {
                             socialId: `M-${microsoftUserId}`,
                             email: passportUserEmail,
-                            socialMedia: 'microsoft'
+                            socialMedia: 'microsoft',
+                            validated: true
                         });
                     }
                     return done('Auth Invalid', null);

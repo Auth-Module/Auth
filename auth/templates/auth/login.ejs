@@ -20,9 +20,14 @@
                         <div class="border border-3 border-primary"></div>
                         <div class="card bg-white shadow-lg">
                             <div class="card-body p-5">
-                                <form class="mb-3 mt-md-4">
+                                <form class="mb-3 mt-md-4"  @submit.prevent="login">
                                     <h2 class="fw-bold mb-2 text-uppercase">My-Auth</h2>
-                                    <p class="mb-5">Please enter your email and password!</p>
+                                    <p class="mb-4" v-if="error =='' ">
+                                        Login using email and password!
+                                    </p>
+                                    <p class="mb-4" style="color: red" v-else>
+                                        {{ error }}
+                                    </p>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email address</label>
                                         <input
@@ -30,22 +35,32 @@
                                             class="form-control"
                                             id="email"
                                             placeholder="name@example.com"
+                                            v-model="email"
+                                            required
                                         />
                                     </div>
                                     <div class="mb-3">
                                         <label for="password" class="form-label">Password</label>
                                         <input
-                                            type="password"
+                                            :type="password_Visisble ? 'text' : 'password' "
                                             class="form-control"
-                                            id="password"
                                             placeholder="*******"
+                                            required
+                                            v-model="password"
+                                            required
                                         />
                                         <input
                                             class="form-check-input"
                                             type="checkbox"
-                                            id="showPassId"
+                                            id="showPassId2"
+                                            @click="changePasswordVisibility"
+                                            style="margin-top: 15px"
                                         />
-                                        <label class="form-check-label" for="showPassId" style="margin-left: 8px;">
+                                        <label
+                                            class="form-check-label"
+                                            for="showPassId2"
+                                            style="margin-left: 8px; margin-top: 10px"
+                                        >
                                             Show password
                                         </label>
                                     </div>
@@ -54,6 +69,11 @@
                                         <button class="btn btn-outline-dark" type="submit">
                                             Login
                                         </button>
+                                    </div>
+                                    <div class="d-grid" style=" margin-top: 17px; color: green;" v-if="login_success">
+                                        <p>
+                                            Login Successful, redireting to homepage ..
+                                        </p>
                                     </div>
                                 </form>
                                 <hr class="my-4" />
@@ -104,24 +124,70 @@
         ></script>
         <script src="https://kit.fontawesome.com/d278adcdd4.js" crossorigin="anonymous"></script>
         <script src="/static/vue.js"></script>
+        <script src="/static/axios.js"></script>
 
         <script>
             const app = Vue.createApp({
                 data() {
                     return {
-                        login_email: '',
-                        login_password: ''
+                        baseURL: '',
+                        email: '',
+                        password: '',
+                        password_Visisble: false,
+                        error: '',
+                        login_success: false
                     };
                 },
                 methods: {
+                    changePasswordVisibility: function () {
+                        this.password_Visisble = !this.password_Visisble;
+                    },
                     googleLogin: function () {
-                        window.location.href = window.location.href.replace("login", "google");
+                        window.location.href = this.baseURL + '/auth/google';
                     },
                     microsoftLogin: function () {
-                        window.location.href = window.location.href.replace("login", "microsoft");
+                        window.location.href = this.baseURL + '/auth/microsoft';
                     },
+                    login: async function () {
+                        try {
+                            this.login_success = false
+                            if (!this.password || this.password.length < 8 || this.password.length >= 20) {
+                                this.error += 'Password should be alteast 8 and max 20 charecter';
+                            } else {
+                                const post_url = this.baseURL + '/auth/email-pass/login';
+                                const postData = {
+                                    email: this.email,
+                                    password: this.password
+                                };
+                                const response = await axios.post(post_url, postData);
+                                if( response.data?.success && response.data?.id ){
+                                    this.login_success = true
+                                    setTimeout(() => {
+                                        window.location.href = this.baseURL + '/auth';
+                                    },500)
+                                } else if(response.data?.validateMsg && response.data?.id ){
+                                    this.error += response.data.validateMsg;
+                                    setTimeout(() => {
+                                        window.location.href = this.baseURL + '/auth/validate/'+response.data.id;
+                                    },500)
+                                }else{
+                                    this.error += 'Error, Please refresh this page and  try again ';  
+                                }
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                                
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    }
                 },
-                mounted: function () {}
+                mounted: function () {
+                    this.baseURL = '<%= baseURL %>';
+                }
             });
             app.mount('#app');
         </script>

@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -8,6 +9,8 @@ const app = express();
 const connectDB = require('./auth/database/connectDB');
 
 connectDB();
+
+app.use(cookieParser());
 
 // static files and view engine
 app.use('/static', express.static(path.join(__dirname, 'auth/static')));
