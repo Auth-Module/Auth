@@ -126,7 +126,7 @@
                 },
                 mounted: async function () {
                     this.baseURL = '<%= baseURL %>';
-                    
+                    this.userId = '<%= id %>';
                     if (this.userId) {
                         console.log('test');
                         await this.sendCodeByEmail();

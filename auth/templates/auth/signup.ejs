@@ -74,7 +74,7 @@
                                             class="form-check-input"
                                             type="checkbox"
                                             id="showPassId2"
-                                            v-on:click="changePasswordVisibility"
+                                            @click="changePasswordVisibility"
                                             style="margin-top: 15px"
                                         />
                                         <label
@@ -161,7 +161,7 @@
                     };
                 },
                 methods: {
-                    changePasswordVisibility: function (auth_action) {
+                    changePasswordVisibility: function () {
                         this.password_Visisble = !this.password_Visisble;
                     },
                     googleLogin: function () {
@@ -172,8 +172,7 @@
                     },
                     registration: async function () {
                         try {
-                            console.log(this.email, this.password, this.password2);
-
+                            this.signup_success = false
                             if (this.password != this.password2) {
                                 this.error += 'Password not match';
                             } else if (this.password.length < 8 || this.password.length >= 20) {
@@ -191,7 +190,9 @@
                                     setTimeout(() => {
                                         window.location.href = this.baseURL + '/auth/validate/'+response.data.id;
                                     },500)
-                                };
+                                } else{
+                                    this.error += 'Error, Please refresh this page and  try again ';  
+                                }
                             }
                         } catch (err) {
                             if (err.response.data.errorMsg) {
