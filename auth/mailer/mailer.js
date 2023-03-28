@@ -27,17 +27,23 @@ const sendMail = async (subject, toEmail, htmlContent, textContent) => {
         return null;
     }
 };
-const signupVerificationEmail = async () => {
+const signupVerificationEmail = async (userEmail, validationcode) => {
     try {
-        const subject = 'Email Verification';
-        const toEmail = 'subhadipsjsc@gmail.com';
-        const htmlContent = await ejs.renderFile(
-            path.join(__dirname, 'email_templates/test.ejs'),
-            {}
-        );
-        const textContent = 'create account';
-        const status = await sendMail(subject, toEmail, htmlContent, textContent);
-        return status;
+        console.log(userEmail, validationcode);
+        if (userEmail && validationcode) {
+            const subject = 'Email Verification';
+            const toEmail = userEmail;
+            const htmlContent = await ejs.renderFile(
+                path.join(__dirname, 'template/email_validation_link.ejs'),
+                {
+                    validationcode
+                }
+            );
+            const textContent = 'create account';
+            const status = await sendMail(subject, toEmail, htmlContent, textContent);
+            return status;
+        }
+        return null;
     } catch (err) {
         console.log(err);
         return null;

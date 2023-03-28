@@ -1,3 +1,10 @@
+const validateNumber = (num) => {
+    if (parseInt(num, 10).toString() !== num.toString()) {
+        return 'not a valid number';
+    }
+    return null;
+};
+
 const isEmail = (input) => {
     // eslint-disable-next-line no-useless-escape
     const regex = /^([a-zA-Z0-9\.-]+)@([a-zA-Z0-9-]+)\.([a-z\.]{2,12})$/;
@@ -8,6 +15,7 @@ const isEmail = (input) => {
 };
 
 const validationError = {
+    isNumber: validateNumber,
     registration: (userdata) => {
         const errorMsg = [];
 

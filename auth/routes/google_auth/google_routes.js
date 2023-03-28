@@ -26,7 +26,8 @@ passport.use(
                             socialId: `G-${profile.id}`,
                             email: response.data.email,
                             socialMedia: 'google',
-                            name: profile.displayName
+                            name: profile.displayName,
+                            validated: true
                         });
                     }
 
