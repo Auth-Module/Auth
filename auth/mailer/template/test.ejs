@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        background-color: #dbdede;
+        padding: 40px;
+      }
+      .box {
+        background-color: #f2f2f2;
+        display: block;
+        margin: 0 auto !important;
+        max-width: 560px;
+        padding: 10px;
+      }
+      .my_button {
+        width: 200px;
+        height: 40px;
+        background-color: #3498db;
+        border-color: #3498db;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box">
+        <p>Hi there,</p>
+        <p>
+          Thanks for starting the new account creation process. 
+          We want to make sure it is really you. 
+          Please click on the following verification button to verify your account. 
+        </p>
+        <a href="<%= verification_link %>">
+          <button class="my_button">Verify Account</button>
+        </a>
+        <p>
+          If you don not want to create an account, you can ignore this message.
+        </p>
+        <p>
+          Our team will never email you and ask you to disclose or verify your password, credit card, or banking account number.
+        </p>
+        <p>Thankyou</p>
+      </div>
+    </div>
+  </body>
+</html>
