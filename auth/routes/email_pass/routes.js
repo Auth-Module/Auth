@@ -25,22 +25,37 @@ router.post('/login', async (req, res) => {
             } else if (user.invalidMsg) {
                 res.send({ validateMsg: user.invalidMsg, id: user.userid });
             } else {
-                const sessionToken = session.createSessionUser({
+                // data to save in Session
+                const sessionUserData = {
+                    userId: user.id,
+                    role: user.role,
+                    userEmail: user.email || '',
+                    userName: user.name || ''
+                };
+
+                // data to send by response
+                const responseUserData = {
                     userId: user.id,
                     userEmail: user.email || '',
                     userName: user.name || ''
-                });
+                };
+                // creating session
+                const sessionToken = session.createSessionUser(sessionUserData);
                 // if we choose http only cookie
+                const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
                 if (process.env.SESSION_TOKEN === 'http-only-cookie') {
-                    res.cookie('auth_session', sessionToken, { httpOnly: true });
-                    res.send({ ...user, sessionToken, success: 1 });
+                    res.cookie('auth_session', sessionToken, {
+                        httpOnly: true,
+                        maxAge: parseInt(sessionDuration, 10) * 60 * 1000
+                    });
+                    res.send({ ...responseUserData, sessionToken, success: 1 });
                 }
                 // if we choose simple cookie
                 else if (process.env.SESSION_TOKEN === 'cookie') {
-                    res.cookie('auth_session', sessionToken);
-                    res.send({ ...user, sessionToken, success: 1 });
+                    res.cookie('auth_session', sessionToken, {});
+                    res.send({ ...responseUserData, sessionToken, success: 1 });
                 } else {
-                    res.send({ ...user, sessionToken, success: 1 });
+                    res.send({ ...responseUserData, sessionToken, success: 1 });
                 }
             }
         }
@@ -57,9 +72,7 @@ router.post('/signup', async (req, res) => {
         if (validationerror) {
             res.status(401).send(validationerror);
         } else {
-            console.log('status 3');
             const user = await createUserByPassword(req.body);
-            console.log('status 4');
             if (user.errorMsg) {
                 res.status(500).send(user);
             } else {

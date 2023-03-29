@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+        />
+    </head>
+    <body>
+        <div class="vh-100 d-flex justify-content-center align-items-center">
+            <div class="container" id="app">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="border border-3 border-primary"></div>
+                        <div class="card bg-white shadow-lg">
+                            <div class="card-body p-5">
+                                <form class="mb-3 mt-md-4"  @submit.prevent="login">
+                                    <h2 class="fw-bold mb-2 text-uppercase">My-Auth</h2>
+                                    <p class="mb-4" v-if="error =='' ">
+                                        Admin Login using email and password!
+                                    </p>
+                                    <p class="mb-4" style="color: red" v-else>
+                                        {{ error }}
+                                    </p>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Admin Email</label>
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            id="email"
+                                            placeholder="name@example.com"
+                                            v-model="email"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input
+                                            :type="password_Visisble ? 'text' : 'password' "
+                                            class="form-control"
+                                            placeholder="*******"
+                                            required
+                                            v-model="password"
+                                            required
+                                        />
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="showPassId2"
+                                            @click="changePasswordVisibility"
+                                            style="margin-top: 15px"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="showPassId2"
+                                            style="margin-left: 8px; margin-top: 10px"
+                                        >
+                                            Show password
+                                        </label>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button class="btn btn-outline-dark" type="submit">
+                                            Login
+                                        </button>
+                                    </div>
+                                    <div class="d-grid" style=" margin-top: 17px; color: green;" v-if="login_success">
+                                        <p>
+                                            Login Successful, redireting to homepage ..
+                                        </p>
+                                    </div>
+                                </form>
+                                
+                                <hr class="my-4" />
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="mb-0 text-center">
+                                            Forget password? <br />
+                                            <a href="forget_password" class="text-primary fw-bold"
+                                                >Click here</a
+                                            >
+                                        </p>
+                                    </div>
+                                    <div class="col">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://kit.fontawesome.com/d278adcdd4.js" crossorigin="anonymous"></script>
+        <script src="/static/vue.js"></script>
+        <script src="/static/axios.js"></script>
+
+        <script>
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        baseURL: '',
+                        email: '',
+                        password: '',
+                        password_Visisble: false,
+                        error: '',
+                        login_success: false
+                    };
+                },
+                methods: {
+                    changePasswordVisibility: function () {
+                        this.password_Visisble = !this.password_Visisble;
+                    },
+                    googleLogin: function () {
+                        window.location.href = this.baseURL + '/auth/google';
+                    },
+                    microsoftLogin: function () {
+                        window.location.href = this.baseURL + '/auth/microsoft';
+                    },
+                    login: async function () {
+                        try {
+                            this.login_success = false
+                            if (!this.password || this.password.length < 8 || this.password.length >= 20) {
+                                this.error += 'Password should be alteast 8 and max 20 charecter';
+                            } else {
+                                const post_url = this.baseURL + '/auth/email-pass/login';
+                                const postData = {
+                                    email: this.email,
+                                    password: this.password
+                                };
+                                const response = await axios.post(post_url, postData);
+                                if( response.data?.success && response.data?.id ){
+                                    this.login_success = true
+                                    setTimeout(() => {
+                                        window.location.href = this.baseURL + '/auth';
+                                    },500)
+                                } else if(response.data?.validateMsg && response.data?.id ){
+                                    this.error += response.data.validateMsg;
+                                    setTimeout(() => {
+                                        window.location.href = this.baseURL + '/auth/validate/'+response.data.id;
+                                    },500)
+                                }else{
+                                    this.error += 'Error, Please refresh this page and  try again ';  
+                                }
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                                
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    }
+                },
+                mounted: function () {
+                    this.baseURL = '<%= baseURL %>';
+                }
+            });
+            app.mount('#app');
+        </script>
+    </body>
+</html>

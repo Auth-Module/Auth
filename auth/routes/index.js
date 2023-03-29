@@ -14,6 +14,12 @@ router.get('/', (req, res) => {
     }
 });
 
+router.get('/logout', (req, res) => {
+    const sessionCookie = req.cookies.auth_session;
+    session.endSession(sessionCookie);
+    res.cookie('auth_session', '').redirect('/login');
+});
+
 // ================== Rendering UI pages======================
 // 1. Login Page
 // 2. Signup Page
@@ -40,5 +46,12 @@ router.get('/validate/:userId', (req, res) => {
 router.use('/email-pass/', require('./email_pass/routes'));
 router.use('/microsoft/', require('./microsoft_auth/microsoft_routes'));
 router.use('/google/', require('./google_auth/google_routes'));
+
+// =========================  UI pages  ===========================
+// 1. Admin login
+// ===========================================================
+router.get('/admin/login', (req, res) => {
+    res.render('admin/login', { baseURL: process.env.SERVER_URL });
+});
 
 module.exports = router;
