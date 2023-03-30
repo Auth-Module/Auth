@@ -54,4 +54,13 @@ router.get('/admin/login', (req, res) => {
     res.render('admin/login', { baseURL: process.env.SERVER_URL });
 });
 
+router.get('/admin/dashboard', (req, res) => {
+    res.render('admin/dashboard', { baseURL: process.env.SERVER_URL });
+});
+
+// ================== Rendering UI pages======================
+// 1. admin Login Page
+// ===========================================================
+router.use('/admin/email-pass/', require('./admin/routes'));
+
 module.exports = router;

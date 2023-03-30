@@ -33,7 +33,7 @@ const User = sequelize.define(
         role: {
             type: DataTypes.STRING,
             allowNull: true,
-            defaultValue: '[basic]'
+            defaultValue: JSON.stringify(['basic'])
         }
     },
     {
@@ -63,7 +63,7 @@ const createAdminUserByPassword = async (userInput) => {
             password: userInput.password,
             socialMedia: 'email_password',
             validated: true,
-            role: '[admin]'
+            role: JSON.stringify(['admin'])
         };
         let userDetails = await User.findOne({ where: { email: user.email } });
         if (userDetails) {
@@ -185,7 +185,6 @@ const checkUserEmailPass = async (userInput) => {
             process.env.PASSWORD_ENCRYPTION,
             process.env.PASSWORD_ENCRYPTION_ROUND
         );
-
         if (userDetails.password === userInputPassHash) {
             const userData = userDetails.toJSON();
             return modifyUserDataMiddleware(userData);

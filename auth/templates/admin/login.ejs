@@ -132,26 +132,22 @@
                     login: async function () {
                         try {
                             this.login_success = false
+                            this.error =''
                             if (!this.password || this.password.length < 8 || this.password.length >= 20) {
                                 this.error += 'Password should be alteast 8 and max 20 charecter';
                             } else {
-                                const post_url = this.baseURL + '/auth/email-pass/login';
+                                const post_url = this.baseURL + '/auth/admin/email-pass/login';
                                 const postData = {
                                     email: this.email,
                                     password: this.password
                                 };
                                 const response = await axios.post(post_url, postData);
-                                if( response.data?.success && response.data?.id ){
+                                if( response.data?.success && response.data?.userId ){
                                     this.login_success = true
                                     setTimeout(() => {
-                                        window.location.href = this.baseURL + '/auth';
+                                        window.location.href = this.baseURL + '/auth/admin/dashboard';
                                     },500)
-                                } else if(response.data?.validateMsg && response.data?.id ){
-                                    this.error += response.data.validateMsg;
-                                    setTimeout(() => {
-                                        window.location.href = this.baseURL + '/auth/validate/'+response.data.id;
-                                    },500)
-                                }else{
+                                } else{
                                     this.error += 'Error, Please refresh this page and  try again ';  
                                 }
                             }

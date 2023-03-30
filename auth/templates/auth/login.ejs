@@ -151,6 +151,7 @@
                     login: async function () {
                         try {
                             this.login_success = false
+                            this.error = ''
                             if (!this.password || this.password.length < 8 || this.password.length >= 20) {
                                 this.error += 'Password should be alteast 8 and max 20 charecter';
                             } else {
@@ -160,15 +161,15 @@
                                     password: this.password
                                 };
                                 const response = await axios.post(post_url, postData);
-                                if( response.data?.success && response.data?.id ){
+                                if( response.data?.success && response.data?.userId ){
                                     this.login_success = true
                                     setTimeout(() => {
                                         window.location.href = this.baseURL + '/auth';
                                     },500)
-                                } else if(response.data?.validateMsg && response.data?.id ){
+                                } else if(response.data?.validateMsg && response.data?.userId ){
                                     this.error += response.data.validateMsg;
                                     setTimeout(() => {
-                                        window.location.href = this.baseURL + '/auth/validate/'+response.data.id;
+                                        window.location.href = this.baseURL + '/auth/validate/'+response.data.userId;
                                     },500)
                                 }else{
                                     this.error += 'Error, Please refresh this page and  try again ';  
