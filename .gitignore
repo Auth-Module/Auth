@@ -106,3 +106,5 @@ dist
 mysqldata/
 
 .DS_Store
+
+session.json

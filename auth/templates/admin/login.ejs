@@ -23,13 +23,13 @@
                                 <form class="mb-3 mt-md-4"  @submit.prevent="login">
                                     <h2 class="fw-bold mb-2 text-uppercase">My-Auth</h2>
                                     <p class="mb-4" v-if="error =='' ">
-                                        Login using email and password!
+                                        Admin Login using email and password!
                                     </p>
                                     <p class="mb-4" style="color: red" v-else>
                                         {{ error }}
                                     </p>
                                     <div class="mb-3">
-                                        <label for="email" class="form-label">Email address</label>
+                                        <label for="email" class="form-label">Admin Email</label>
                                         <input
                                             type="email"
                                             class="form-control"
@@ -76,21 +76,7 @@
                                         </p>
                                     </div>
                                 </form>
-                                <hr class="my-4" />
-                                <div class="row">
-                                    <div class="col-6 d-flex justify-content-center my-2">
-                                        <button class="btn btn-outline-dark" @click="googleLogin">
-                                            <i class="fab fa-google me-2"></i> Sign in with Google
-                                        </button>
-                                    </div>
-                                    <div class="col-6 d-flex justify-content-center my-2">
-                                        <button class="btn btn-outline-dark"  @click="microsoftLogin">
-                                            <i class="fab fa-microsoft me-2"></i> Sign in with
-                                            Microsoft
-                                        </button>
-                                    </div>
-                                </div>
-
+                                
                                 <hr class="my-4" />
                                 <div class="row">
                                     <div class="col">
@@ -102,12 +88,7 @@
                                         </p>
                                     </div>
                                     <div class="col">
-                                        <p class="mb-0 text-center">
-                                            No account? <br />
-                                            <a href="signup" class="text-primary fw-bold"
-                                                >Sign Up</a
-                                            >
-                                        </p>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -151,11 +132,11 @@
                     login: async function () {
                         try {
                             this.login_success = false
-                            this.error = ''
+                            this.error =''
                             if (!this.password || this.password.length < 8 || this.password.length >= 20) {
                                 this.error += 'Password should be alteast 8 and max 20 charecter';
                             } else {
-                                const post_url = this.baseURL + '/auth/email-pass/login';
+                                const post_url = this.baseURL + '/auth/admin/email-pass/login';
                                 const postData = {
                                     email: this.email,
                                     password: this.password
@@ -164,14 +145,9 @@
                                 if( response.data?.success && response.data?.userId ){
                                     this.login_success = true
                                     setTimeout(() => {
-                                        window.location.href = this.baseURL + '/auth';
+                                        window.location.href = this.baseURL + '/auth/admin/dashboard';
                                     },500)
-                                } else if(response.data?.validateMsg && response.data?.userId ){
-                                    this.error += response.data.validateMsg;
-                                    setTimeout(() => {
-                                        window.location.href = this.baseURL + '/auth/validate/'+response.data.userId;
-                                    },500)
-                                }else{
+                                } else{
                                     this.error += 'Error, Please refresh this page and  try again ';  
                                 }
                             }

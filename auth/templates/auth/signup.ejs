@@ -173,6 +173,7 @@
                     registration: async function () {
                         try {
                             this.signup_success = false
+                            this.error = ''
                             if (this.password != this.password2) {
                                 this.error += 'Password not match';
                             } else if (this.password.length < 8 || this.password.length >= 20) {
