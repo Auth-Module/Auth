@@ -61,6 +61,7 @@ router.get('/admin/dashboard', (req, res) => {
 // ================== Rendering UI pages======================
 // 1. admin Login Page
 // ===========================================================
-router.use('/admin/email-pass/', require('./admin/routes'));
+router.use('/admin/email-pass/', require('./admin_login/routes'));
+router.use('/admin/action/', require('./admin/routes'));
 
 module.exports = router;
