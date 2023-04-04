@@ -217,7 +217,67 @@
                         baseURL: ''
                     };
                 },
-                mounted: function () {
+                methods: {
+                    updateProxy: async function () {
+                        try {
+                            const post_url = this.baseURL + '/auth/admin/action/proxy';
+                            const response = await axios.put(post_url, { proxy :JSON.stringify(this.proxy)} );
+                            if (response.data?.success && response.data?.userId) {
+                                this.login_success = true;
+                            } else {
+                                this.error += 'Error, Please refresh this page and  try again ';
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    },
+                    getProxy: async function () {
+                        try {
+                            const get_url = this.baseURL + '/auth/admin/action/proxy';
+                            const response = await axios.get(get_url);
+                            if (response.data?.success && response.data?.proxyValue) {
+                                if (Object.keys(response.data.proxyValue).length) {
+                                    const arr = [];
+                                    for (const property in response.data.proxyValue) {
+                                        arr.push({
+                                            source: property,
+                                            destination: response.data.proxyValue[property]
+                                        });
+                                    }
+                                    this.proxy = arr;
+                                } else {
+                                    this.proxy = [{ source: this.baseURL, destination: '' }];
+                                }
+                            } else {
+                                this.error += 'Error, Please refresh this page and  try again ';
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    },
+                    addField: function () {
+                        const arr = JSON.parse(JSON.stringify(this.proxy));
+                        arr.push({ source: '', destination: '' });
+                        this.proxy = arr;
+                    },
+                    removeField: async function (index) {
+                        const arr = JSON.parse(JSON.stringify(this.proxy));
+                        arr.splice(index, 1);
+                        this.proxy = arr;
+                        await this.updateProxy();
+                    }
+                },
+                mounted: async function () {
                     this.baseURL = '<%= baseURL %>';
                 }
             });

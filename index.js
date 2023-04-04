@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-// const axios = require('axios');
+const axios = require('axios');
 
 const app = express();
 
@@ -35,24 +35,38 @@ app.use('/auth', require('./auth/index'));
 // if session available , then forward the call
 // ===========================================================
 const session = require('./session/index');
+const proxy = require('./proxy/index');
 
 app.get('/*', async (req, res) => {
-    const sessionCookie = req.cookies.auth_session;
-    const sessionUser = session.getSessionUser(sessionCookie);
-    if (!sessionUser) {
-        res.redirect('/auth/login');
-    } else {
-        const [pathURL, queryParam] = req.url.split('?');
-        // const responseData = await axios({
-        //     method: req.method,
-        //     url: '/user/12345',
-        //     data: req.body,
-        //     transformResponse: (apiRes) => apiRes,
-        //     timeout: 1000,
-        //     headers: { ...req.headers, authuser: JSON.stringify(sessionUser) }
-        // });
-
-        res.send({ ...sessionUser, pathURL, queryParam });
+    try {
+        const sessionCookie = req.cookies.auth_session;
+        const sessionUser = session.getSessionUser(sessionCookie);
+        if (!sessionUser) {
+            res.redirect('/auth/login');
+        } else {
+            // const [pathURL, queryParam] = req.url.split('?');
+            const proxyURL = proxy.proxyURLRewrite(req.url);
+            if (proxyURL) {
+                const responseData = await axios({
+                    method: req.method,
+                    url: proxyURL,
+                    transformResponse: (r) => r,
+                    responseType: 'text',
+                    timeout: 10000,
+                    headers: req.headers
+                });
+                if (responseData.data) {
+                    res.send(responseData.data);
+                } else {
+                    res.send({ status: 'ok' });
+                }
+            } else {
+                res.send({ error: 'Page not found' });
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        res.send({ error: 'API call error' });
     }
 });
 

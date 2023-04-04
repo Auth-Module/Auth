@@ -12,6 +12,8 @@ const updateProxy = (proxy) => {
                 temp[v.source] = v.destination;
             }
         });
+    } else {
+        console.log('proxy is not an Array', proxy);
     }
     if (Object.keys(temp).length) {
         proxyServers.settings = { ...temp };
@@ -22,6 +24,21 @@ const updateProxy = (proxy) => {
 
 const getProxy = () => {
     return proxyServers.settings;
+};
+
+const proxyURLRewrite = (currentURL) => {
+    let urlDestination = '';
+    if (currentURL.includes('favicon.ico')) {
+        return '';
+    }
+    // eslint-disable-next-line consistent-return
+    Object.keys(proxyServers.settings).forEach((subURL) => {
+        if (currentURL.includes(subURL)) {
+            const remainingURL = currentURL.split(subURL)[1];
+            urlDestination = proxyServers.settings[subURL] + remainingURL;
+        }
+    });
+    return urlDestination;
 };
 
 const getProxyDataFromFile = async () => {
@@ -53,6 +70,7 @@ saveProxyDataOnDisk();
 
 const proxy = {
     updateProxy,
-    getProxy
+    getProxy,
+    proxyURLRewrite
 };
 module.exports = proxy;
