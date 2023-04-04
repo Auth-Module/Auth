@@ -47,7 +47,6 @@ app.get('/*', async (req, res) => {
             // const [pathURL, queryParam] = req.url.split('?');
             const proxyURL = proxy.proxyURLRewrite(req.url);
             if (proxyURL) {
-                console.log(req.headers);
                 const responseData = await axios({
                     method: req.method,
                     url: proxyURL,
@@ -57,10 +56,12 @@ app.get('/*', async (req, res) => {
                     headers: req.headers
                 });
                 if (responseData.data) {
-                    res.send({ status: responseData.data });
+                    res.send(responseData.data);
                 } else {
                     res.send({ status: 'ok' });
                 }
+            } else {
+                res.send({ error: 'Page not found' });
             }
         }
     } catch (error) {

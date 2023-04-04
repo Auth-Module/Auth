@@ -9,7 +9,7 @@
     "start": "node index"
   },
   "nodemonConfig": {
-    "ignore": ["session.json","proxy.json"]
+    "ignore": ["session.json"]
   },
   "keywords": [],
   "author": "",

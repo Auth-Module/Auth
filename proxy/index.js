@@ -27,18 +27,15 @@ const getProxy = () => {
 };
 
 const proxyURLRewrite = (currentURL) => {
-    let urlDestination = currentURL;
+    let urlDestination = '';
     if (currentURL.includes('favicon.ico')) {
         return '';
     }
     // eslint-disable-next-line consistent-return
     Object.keys(proxyServers.settings).forEach((subURL) => {
-        console.log('subURL', subURL);
-        console.log('currentURL', currentURL);
         if (currentURL.includes(subURL)) {
             const remainingURL = currentURL.split(subURL)[1];
             urlDestination = proxyServers.settings[subURL] + remainingURL;
-            console.log(subURL, currentURL, urlDestination);
         }
     });
     return urlDestination;
