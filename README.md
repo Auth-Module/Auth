@@ -49,7 +49,7 @@ current available branch names are :
 5. shammi : https://github.com/Auth-Module/Auth/tree/shammi
 6. main : < we can not push code to main without code review >
 
-#### For the first time fetch branch
+
 #### For the first time fetch branch
 git fetch origin <remote_branch_name>   <br />
 git checkout --track origin/<remote_branch_name> <br />
@@ -133,7 +133,7 @@ git push
 
 ```
 
-##### step 3
+##### step 4
 go to your github branch , as per this list:
 1. subhadip :  https://github.com/Auth-Module/Auth/tree/subhadip
 2. divyam : https://github.com/Auth-Module/Auth/tree/divyam

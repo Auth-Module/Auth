@@ -55,8 +55,14 @@ router.get('/admin/login', (req, res) => {
     res.render('admin/login', { baseURL: process.env.SERVER_URL });
 });
 
-router.get('/admin/dashboard', sessioMiddleware, (req, res) => {
-    res.render('admin/dashboard', { baseURL: process.env.SERVER_URL });
+router.get('/admin/dashboard', (req, res) => {
+    const sessionCookie = req.cookies.auth_session;
+    const sessionUser = session.getSessionUser(sessionCookie);
+    if (sessionUser) {
+        res.render('admin/dashboard', { baseURL: process.env.SERVER_URL });
+    } else {
+        res.render('admin/login', { baseURL: process.env.SERVER_URL });
+    }
 });
 
 // ================== Rendering UI pages======================

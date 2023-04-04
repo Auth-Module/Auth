@@ -17,13 +17,15 @@ router.get('/proxy', async (req, res) => {
         res.send({ errorMsg: err.message });
     }
 });
+
 router.put('/proxy', async (req, res) => {
     try {
-        const proxyError = proxyURLError.checkProxy(req.body);
+        const proxyValue = JSON.parse(req.body.proxy);
+        const proxyError = proxyURLError.checkProxy(proxyValue);
         if (proxyError) {
             res.status(401).send(proxyError);
         } else {
-            const status = proxy.updateProxy(req.body);
+            const status = proxy.updateProxy(proxyValue);
             if (status) {
                 res.send({ success: 1 });
             } else {

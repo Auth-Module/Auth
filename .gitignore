@@ -107,4 +107,6 @@ mysqldata/
 
 .DS_Store
 
+#removing session and proxy setting
 session.json
+proxy.json

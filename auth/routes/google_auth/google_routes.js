@@ -5,7 +5,8 @@ const router = express.Router();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const { findOrCreate } = require('../../database/models/user');
+const { findOrCreateUserBySocialMedia } = require('../../database/models/user');
+const session = require('../../../session/index');
 
 passport.use(
     new GoogleStrategy(
@@ -56,10 +57,36 @@ router.get(
     }),
     async (req, res) => {
         try {
-            const userdata = await findOrCreate(req.user);
-            res.send(userdata);
+            const user = await findOrCreateUserBySocialMedia(req.user);
+            // data to save in Session
+            const sessionUserData = {
+                userId: user.id,
+                role: user.role,
+                userEmail: user.email || '',
+                userName: user.name || ''
+            };
+
+            // creating session
+            const sessionToken = session.createSessionUser(sessionUserData);
+            // if we choose http only cookie
+            const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
+            if (process.env.SESSION_TOKEN === 'http-only-cookie') {
+                res.cookie('auth_session', sessionToken, {
+                    httpOnly: true,
+                    maxAge: parseInt(sessionDuration, 10) * 60 * 1000
+                });
+                res.redirect('/');
+            }
+            // if we choose simple cookie
+            else if (process.env.SESSION_TOKEN === 'cookie') {
+                res.cookie('auth_session', sessionToken, {});
+                res.redirect('/');
+            } else {
+                res.redirect('/');
+            }
         } catch (err) {
             res.send(err);
+            res.redirect('/auth/login');
         }
     }
 );

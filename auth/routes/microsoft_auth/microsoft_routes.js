@@ -4,6 +4,8 @@ const router = express.Router();
 const axios = require('axios');
 const passport = require('passport');
 const MicrosoftStrategy = require('passport-microsoft').Strategy;
+const { findOrCreateUserBySocialMedia } = require('../../database/models/user');
+const session = require('../../../session/index');
 
 passport.use(
     new MicrosoftStrategy(
@@ -46,12 +48,38 @@ router.get(
         session: false,
         failureRedirect: `${process.env.SERVER_URL}/auth`
     }),
-    (req, res) => {
+    async (req, res) => {
         try {
-            res.send(req.user);
+            const user = await findOrCreateUserBySocialMedia(req.user);
+            // data to save in Session
+            const sessionUserData = {
+                userId: user.id,
+                role: user.role,
+                userEmail: user.email || '',
+                userName: user.name || ''
+            };
+
+            // creating session
+            const sessionToken = session.createSessionUser(sessionUserData);
+            // if we choose http only cookie
+            const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
+            if (process.env.SESSION_TOKEN === 'http-only-cookie') {
+                res.cookie('auth_session', sessionToken, {
+                    httpOnly: true,
+                    maxAge: parseInt(sessionDuration, 10) * 60 * 1000
+                });
+                res.redirect('/');
+            }
+            // if we choose simple cookie
+            else if (process.env.SESSION_TOKEN === 'cookie') {
+                res.cookie('auth_session', sessionToken, {});
+                res.redirect('/');
+            } else {
+                res.redirect('/');
+            }
         } catch (err) {
             console.log('error', err);
-            res.send('login again');
+            res.redirect('/auth/login');
         }
     }
 );
