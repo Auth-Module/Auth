@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+        />
+        <style>
+            .form_box_centre {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 13px;
+                margin: 10px;
+                border: 3px solid #d2d2d2;
+                border-radius: 13px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Admin Dashboard</a>
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Link</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    href="#"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    Dropdown
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Action</a></li>
+                                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">Something else here</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled">Disabled</a>
+                            </li>
+                        </ul>
+
+                        <div class="d-flex">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item dropdown">
+                                    <a
+                                        class="nav-link dropdown-toggle"
+                                        href="#"
+                                        id="navbarDropdownMenuLink"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >
+                                        Account
+                                    </a>
+                                    <ul
+                                        class="dropdown-menu"
+                                        aria-labelledby="navbarDropdownMenuLink"
+                                        style="right: 0 !important; left: auto !important"
+                                    >
+                                        <li><a class="dropdown-item" href="#">Action</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                class="dropdown-item"
+                                                v-bind:href="baseURL+'/auth/logout' "
+                                                >Logout</a
+                                            >
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="container-fluid mx-0 px-0">
+                <div class="row">
+                    <div class="col-md-5 col-sm-11" style="background-color: #ececec; height: 100%">
+                        <from @submit.prevent="updateProxy">
+                            <div class="form_box_centre" v-for="(fields, index) in proxy">
+                                <div class="input-group flex-nowrap">
+                                    <span
+                                        class="input-group-text"
+                                        id="addon-wrapping"
+                                        style="width: 105px"
+                                        >Source</span
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="/xyz"
+                                        aria-describedby="addon-wrapping"
+                                        v-model="fields.source"
+                                    />
+                                </div>
+                                <div class="input-group flex-nowrap" style="margin-top: 5px">
+                                    <span
+                                        class="input-group-text"
+                                        id="addon-wrapping"
+                                        style="width: 105px"
+                                        >Destination</span
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="http://domain/something"
+                                        aria-describedby="addon-wrapping"
+                                        v-model="fields.destination"
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-danger my-1"
+                                    @click="removeField(index)"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+
+                            <div
+                                class="d-flex"
+                                style="justify-content: space-between; padding: 10px"
+                            >
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary pull-right"
+                                    @click="addField"
+                                >
+                                    Add New
+                                </button>
+                                <button
+                                    type="submit"
+                                    class="btn btn-secondary pull-right"
+                                    @click="updateProxy"
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </from>
+                    </div>
+
+                    <div class="col-md-5 col-sm-11 box_centre"></div>
+                </div>
+            </div>
+        </div>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://kit.fontawesome.com/d278adcdd4.js" crossorigin="anonymous"></script>
+        <script src="/static/vue.js"></script>
+        <script src="/static/axios.js"></script>
+        <script>
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        baseURL: '',
+                        proxy: [],
+                        error: ''
+                    };
+                },
+                methods: {
+                    updateProxy: async function () {
+                        try {
+                            const post_url = this.baseURL + '/auth/admin/action/proxy';
+                            const response = await axios.put(post_url, JSON.stringify(this.proxy));
+                            if (response.data?.success && response.data?.userId) {
+                                this.login_success = true;
+                            } else {
+                                this.error += 'Error, Please refresh this page and  try again ';
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    },
+                    getProxy: async function () {
+                        try {
+                            const get_url = this.baseURL + '/auth/admin/action/proxy';
+                            const response = await axios.get(get_url);
+                            if (response.data?.success && response.data?.proxyValue) {
+                                if (Object.keys(response.data.proxyValue).length) {
+                                    const arr = [];
+                                    for (const property in response.data.proxyValue) {
+                                        arr.push({
+                                            source: property,
+                                            destination: response.data.proxyValue[property]
+                                        });
+                                    }
+                                    this.proxy = arr;
+                                } else {
+                                    this.proxy = [{ source: this.baseURL, destination: '' }];
+                                }
+                            } else {
+                                this.error += 'Error, Please refresh this page and  try again ';
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    },
+                    addField: function () {
+                        const arr = JSON.parse(JSON.stringify(this.proxy));
+                        arr.push({ source: '', destination: '' });
+                        this.proxy = arr;
+                    },
+                    removeField: async function (index) {
+                        const arr = JSON.parse(JSON.stringify(this.proxy));
+                        arr.splice(index, 1);
+                        this.proxy = arr;
+                        await this.updateProxy();
+                    }
+                },
+                mounted: async function () {
+                    this.baseURL = '<%= baseURL %>';
+
+                    await this.getProxy();
+                }
+            });
+            app.mount('#app');
+        </script>
+    </body>
+</html>

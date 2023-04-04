@@ -104,3 +104,7 @@ dist
 .tern-port
 
 mysqldata/
+
+.DS_Store
+
+session.json
