@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const proxyURLError = require('../../helper/validateProxy');
 const proxy = require('../../../proxy/index');
+const editProxy = require('../../helper/editProxyReq');
 
 router.get('/proxy', async (req, res) => {
     try {
@@ -20,7 +21,7 @@ router.get('/proxy', async (req, res) => {
 
 router.put('/proxy', async (req, res) => {
     try {
-        const proxyValue = JSON.parse(req.body.proxy);
+        const proxyValue = editProxy(JSON.parse(req.body.proxy));
         const proxyError = proxyURLError.checkProxy(proxyValue);
         if (proxyError) {
             res.status(401).send(proxyError);
