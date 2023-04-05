@@ -8,8 +8,10 @@ const updateProxy = (proxy) => {
     const temp = {};
     if (Array.isArray(proxy)) {
         proxy.forEach((v) => {
-            if (v.source && v.destination) {
-                temp[v.source] = v.destination;
+            const source = v.source.trim();
+            const destination = v.destination.trim();
+            if (source && destination) {
+                temp[source] = destination;
             }
         });
     } else {

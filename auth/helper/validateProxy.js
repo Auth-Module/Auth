@@ -1,4 +1,7 @@
 function isUrl(str) {
+    if (str.includes('http://localhost:') || str.includes('https://localhost:')) {
+        return true;
+    }
     const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
             '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -12,8 +15,8 @@ function isUrl(str) {
 }
 
 function isRoute(s) {
-    const regexp = /^[a-zA-Z0-9_\-/]+$/;
-    return regexp.test(s);
+    const regexPattern = /^[a-zA-Z0-9_\-/]+$/;
+    return regexPattern.test(s);
 }
 
 const proxyURLError = {
@@ -25,7 +28,7 @@ const proxyURLError = {
                     errorMsg.push(
                         `${v.source} , ${v.destination} , source and destination mandetory`
                     );
-                } else if (isRoute(v.source)) {
+                } else if (!isRoute(v.source)) {
                     errorMsg.push(`${v.source} is not a Route, allowed a-z,0-9,_,-,/`);
                 } else if (!isUrl(v.destination)) {
                     errorMsg.push(`${v.destination} is not a  proper url`);
