@@ -153,6 +153,18 @@ const findUserById = async (id) => {
     }
 };
 
+const findAllUser = async () => {
+    try {
+        const userDetails = await User.findAll();
+        const allUsers = userDetails.map((v) => {
+            return { id: v.id, name: v.name, email: v.email, role: v.role };
+        });
+        return allUsers;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 const markUservalidated = async (id) => {
     try {
         const userDetails = await User.findByPk(id);
@@ -202,6 +214,7 @@ module.exports = {
     findOrCreateUserBySocialMedia,
     createUserByPassword,
     findUserById,
+    findAllUser,
     markUservalidated,
     checkUserEmailPass
 };

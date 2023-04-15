@@ -18,8 +18,8 @@ const createSessionUser = (userDetails) => {
             process.env.SESSION_ENCRYPTION_ROUND
         );
         sessionData.sessionKey[hash] = { ...user };
-        sessionData.userIds[user.id] = hash;
-
+        const userId = userDetails.id || userDetails.userId;
+        sessionData.userIds[userId] = hash;
         return hash;
     }
     throw new Error('userId is needed');
@@ -48,12 +48,16 @@ const endSession = (sessionId) => {
 const modifySessionUser = (userDetails) => {
     return userDetails;
 };
+const allLoggedinUsers = () => {
+    return Object.keys(sessionData.userIds);
+};
 
 const session = {
     createSessionUser,
     getSessionUser,
     modifySessionUser,
-    endSession
+    endSession,
+    allLoggedinUsers
 };
 
 const getSessionDataFromFile = async () => {
