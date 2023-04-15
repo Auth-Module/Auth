@@ -10,8 +10,9 @@ const updateProxy = (proxy) => {
         proxy.forEach((v) => {
             const source = v.source.trim();
             const destination = v.destination.trim();
+            const scope = v.scope || [];
             if (source && destination) {
-                temp[source] = destination;
+                temp[source] = { destination, scope };
             }
         });
     } else {

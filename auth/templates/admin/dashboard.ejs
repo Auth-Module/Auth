@@ -108,7 +108,7 @@
                     </div>
                 </div>
             </nav>
-            <div class="container-fluid mx-0 px-0">
+            <div class="container-fluid mx-0 px-0 my-2">
                 <div class="row">
                     <div class="col-md-5 col-sm-11" style="background-color: #ececec; height: 100%">
                         <from @submit.prevent="updateProxy">
@@ -143,6 +143,21 @@
                                         v-model="fields.destination"
                                     />
                                 </div>
+                                <div class="input-group flex-nowrap" style="margin-top: 5px">
+                                    <span
+                                        class="input-group-text"
+                                        id="addon-wrapping"
+                                        style="width: 105px"
+                                        >Scope</span
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Admin , basic , HR"
+                                        aria-describedby="addon-wrapping"
+                                        v-model="fields.scope"
+                                    />
+                                </div>
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-danger my-1"
@@ -174,8 +189,31 @@
                         </from>
                     </div>
 
-                    <div class="col-md-5 col-sm-11 box_centre">
-                        login users and all the user
+                    <div
+                        class="col-md-6 col-sm-11 box_centre"
+                        style="background-color: #ececec; margin-left: 10px; height: 100%"
+                    >
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="user in allusers">
+                                    <td> 
+                                        <span v-if="currentLogInUsers.includes(user.id)" style="color:#598d59"> Online </span>
+                                        <span v-else> Offline </span>
+                                    </td>
+                                    <td>{{ user.name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.modifiedRole }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -195,14 +233,18 @@
                     return {
                         baseURL: '',
                         proxy: [],
-                        error: ''
+                        error: '',
+                        allusers: '',
+                        currentLogInUsers: []
                     };
                 },
                 methods: {
                     updateProxy: async function () {
                         try {
                             const post_url = this.baseURL + '/auth/admin/action/proxy';
-                            const response = await axios.put(post_url,{proxy : JSON.stringify(this.proxy) } );
+                            const response = await axios.put(post_url, {
+                                proxy: JSON.stringify(this.proxy)
+                            });
                             if (response.data?.success && response.data?.userId) {
                                 this.login_success = true;
                             } else {
@@ -227,12 +269,42 @@
                                     for (const property in response.data.proxyValue) {
                                         arr.push({
                                             source: property,
-                                            destination: response.data.proxyValue[property]
+                                            destination: response.data.proxyValue[property].destination,
+                                            scope : response.data.proxyValue[property].scope.join()
                                         });
                                     }
                                     this.proxy = arr;
                                 } else {
                                     this.proxy = [{ source: this.baseURL, destination: '' }];
+                                }
+                            } else {
+                                this.error += 'Error, Please refresh this page and  try again ';
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    },
+                    getAllUsers: async function () {
+                        try {
+                            const get_url = this.baseURL + '/auth/admin/action/all-user';
+                            const response = await axios.get(get_url);
+                            if (response.data?.success && response.data?.users) {
+                                response.data.users.forEach((element) => {
+                                    element.role = JSON.parse(element.role);
+                                    element.modifiedRole = element.role.join();
+                                });
+                                this.allusers = response.data.users;
+                                console.log(this.allusers);
+
+                                if (response.data.currentUsers) {
+                                    this.currentLogInUsers = response.data.currentUsers.map((v) =>
+                                        parseInt(v, 10)
+                                    );
                                 }
                             } else {
                                 this.error += 'Error, Please refresh this page and  try again ';
@@ -262,6 +334,7 @@
                     this.baseURL = '<%= baseURL %>';
 
                     await this.getProxy();
+                    await this.getAllUsers();
                 }
             });
             app.mount('#app');
