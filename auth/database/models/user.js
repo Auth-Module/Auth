@@ -1,16 +1,20 @@
 const { DataTypes, Op } = require('sequelize');
 const sequelize = require('../config');
-const { Sha512Encryption } = require('../../helper/encryption');
+const {
+    Sha512Encryption,
+    encryptDataAES256,
+    decryptDataAES256
+} = require('../../helper/encryption');
 
 const User = sequelize.define(
     'User',
     {
         name: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true
         },
         email: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true
         },
         socialMedia: {
@@ -58,8 +62,8 @@ const modifyUserDataMiddleware = (user) => {
 const createAdminUserByPassword = async (userInput) => {
     try {
         const user = {
-            name: userInput.name,
-            email: userInput.email,
+            name: encryptDataAES256(userInput.name.trim()),
+            email: encryptDataAES256(userInput.email.trim()),
             password: userInput.password,
             socialMedia: 'email_password',
             validated: true,
@@ -80,7 +84,10 @@ const createAdminUserByPassword = async (userInput) => {
         );
 
         userDetails = await User.create(user);
-        return { name: userDetails.name, email: userDetails.email };
+        return {
+            name: decryptDataAES256(userDetails.name),
+            email: decryptDataAES256(userDetails.email)
+        };
     } catch (error) {
         console.log('error');
         throw new Error(error.message);
@@ -90,9 +97,10 @@ const createAdminUserByPassword = async (userInput) => {
 const findOrCreateUserBySocialMedia = async (user) => {
     try {
         if ((user.email || user.socialId) && !user.password) {
+            const email = encryptDataAES256(user.email.trim());
             let userDetails = await User.findOne({
                 where: {
-                    [Op.or]: [{ email: user.email }, { socialId: user.socialId }]
+                    [Op.or]: [{ email }, { socialId: user.socialId }]
                 }
             });
 
@@ -101,6 +109,8 @@ const findOrCreateUserBySocialMedia = async (user) => {
                 userDetails = await User.create(user);
             }
             const userData = userDetails.toJSON();
+            userData.email = decryptDataAES256(userData.email);
+            userData.name = decryptDataAES256(userData.name);
             return modifyUserDataMiddleware(userData);
         }
         throw new Error('error in user');
@@ -112,8 +122,8 @@ const findOrCreateUserBySocialMedia = async (user) => {
 const createUserByPassword = async (userInput) => {
     try {
         const user = {
-            name: userInput.name,
-            email: userInput.email,
+            name: encryptDataAES256(userInput.name.trim()),
+            email: encryptDataAES256(userInput.email.trim()),
             password: userInput.password,
             socialMedia: 'email_password'
         };
@@ -133,6 +143,8 @@ const createUserByPassword = async (userInput) => {
 
         userDetails = await User.create(user);
         const userData = userDetails.toJSON();
+        userData.email = decryptDataAES256(userData.email);
+        userData.name = decryptDataAES256(userData.name);
         return modifyUserDataMiddleware(userData);
     } catch (error) {
         console.log('error');
@@ -147,6 +159,8 @@ const findUserById = async (id) => {
             return { errorMsg: 'validation error' };
         }
         const userData = userDetails.toJSON();
+        userData.email = decryptDataAES256(userData.email);
+        userData.name = decryptDataAES256(userData.name);
         return modifyUserDataMiddleware(userData);
     } catch (error) {
         throw new Error(error.message);
@@ -157,7 +171,12 @@ const findAllUser = async () => {
     try {
         const userDetails = await User.findAll();
         const allUsers = userDetails.map((v) => {
-            return { id: v.id, name: v.name, email: v.email, role: v.role };
+            return {
+                id: v.id,
+                name: decryptDataAES256(v.name),
+                email: decryptDataAES256(v.email),
+                role: v.role
+            };
         });
         return allUsers;
     } catch (error) {
@@ -181,7 +200,8 @@ const markUservalidated = async (id) => {
 
 const checkUserEmailPass = async (userInput) => {
     try {
-        const userDetails = await User.findOne({ where: { email: userInput.email } });
+        const email = encryptDataAES256(userInput.email.trim());
+        const userDetails = await User.findOne({ where: { email } });
         if (!userDetails) {
             return { errorMsg: 'User not exists' };
         }
@@ -199,6 +219,8 @@ const checkUserEmailPass = async (userInput) => {
         );
         if (userDetails.password === userInputPassHash) {
             const userData = userDetails.toJSON();
+            userData.email = decryptDataAES256(userData.email);
+            userData.name = decryptDataAES256(userData.name);
             return modifyUserDataMiddleware(userData);
         }
         return { errorMsg: 'email or password not matched' };
