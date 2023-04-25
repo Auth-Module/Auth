@@ -275,7 +275,36 @@
                                     }
                                     this.proxy = arr;
                                 } else {
-                                    this.proxy = [{ source: this.baseURL, destination: '' }];
+                                    this.proxy = [{ source: '', destination: '' }];
+                                }
+                            } else {
+                                this.error += 'Error, Please refresh this page and  try again ';
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            if (err?.response?.data?.errorMsg) {
+                                this.error += err.response.data.errorMsg;
+                            } else {
+                                this.error += 'Error, Please try again after some time';
+                            }
+                        }
+                    },
+                    getAllUsers: async function () {
+                        try {
+                            const get_url = this.baseURL + '/auth/admin/action/all-user';
+                            const response = await axios.get(get_url);
+                            if (response.data?.success && response.data?.users) {
+                                response.data.users.forEach((element) => {
+                                    element.role = JSON.parse(element.role);
+                                    element.modifiedRole = element.role.join();
+                                });
+                                this.allusers = response.data.users;
+                                console.log(this.allusers);
+
+                                if (response.data.currentUsers) {
+                                    this.currentLogInUsers = response.data.currentUsers.map((v) =>
+                                        parseInt(v, 10)
+                                    );
                                 }
                             } else {
                                 this.error += 'Error, Please refresh this page and  try again ';
