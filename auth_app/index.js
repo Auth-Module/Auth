@@ -9,7 +9,7 @@ const app = express();
 // ================ connecting DB =======================
 // the connction file is inside auth/databse folder
 // ======================================================
-const connectDB = require('./auth/database/connectDB');
+const connectDB = require('./server/auth/database/connectDB');
 
 connectDB();
 
@@ -21,21 +21,21 @@ app.use(cookieParser());
 // ================= client side css,js, HTML ==============
 // static files and view engine
 // ========================================================
-app.use('/static', express.static(path.join(__dirname, 'auth/static')));
-app.set('views', path.join(__dirname, 'auth/templates'));
+app.use('/static', express.static(path.join(__dirname, '/server/auth/static')));
+app.set('views', path.join(__dirname, '/server/auth/templates'));
 app.set('view engine', 'ejs');
 
 // ======================== Auth ==========================
 // Auth related routes , model , helper
 // =======================================================
-app.use('/auth', require('./auth/index'));
+app.use('/auth', require('./server/auth/index'));
 
 // =================== API Forwarding =======================
 // checking if session is not available , redirect to login page
 // if session available , then forward the call
 // ===========================================================
-const session = require('./session/index');
-const proxy = require('./proxy/index');
+const session = require('./server/session/index');
+const proxy = require('./server/proxy/index');
 
 app.get('/*', async (req, res) => {
     try {
@@ -44,29 +44,45 @@ app.get('/*', async (req, res) => {
         if (!sessionUser) {
             res.redirect('/auth/login');
         } else {
-            // const [pathURL, queryParam] = req.url.split('?');
-            const proxyURL = proxy.proxyURLRewrite(req.url);
-            if (proxyURL) {
-                const responseData = await axios({
-                    method: req.method,
-                    url: proxyURL,
-                    transformResponse: (r) => r,
-                    responseType: 'text',
-                    timeout: 10000,
-                    headers: req.headers
-                });
-                if (responseData.data) {
-                    res.send(responseData.data);
+            const proxyData = proxy.proxyURLRewrite(req.url);
+            if (proxyData) {
+                const isScoped =
+                    proxyData && proxyData.scope.some((v) => sessionUser.role.indexOf(v) !== -1);
+
+                if (!isScoped) {
+                    res.send({ status: 'not authorized' });
+                } else if (proxyData.url) {
+                    const responseData = await axios({
+                        method: req.method,
+                        url: proxyData.url,
+                        transformResponse: (r) => r,
+                        responseType: 'text',
+                        timeout: 10000,
+                        headers: req.headers
+                    });
+                    if (responseData.data) {
+                        res.send(responseData.data);
+                    } else {
+                        res.send({ status: 'ok' });
+                    }
                 } else {
-                    res.send({ status: 'ok' });
+                    res.send({ error: 'Page not found' });
                 }
             } else {
-                res.send({ error: 'Page not found' });
+                res.send({ error: 'URL not found' });
             }
         }
     } catch (error) {
-        console.log(error);
-        res.send({ error: 'API call error' });
+        if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+        } else if (error.request) {
+            console.log(error.request);
+        } else {
+            console.log('Error', error.message);
+        }
+        res.send({ error: 'Routing call error' });
     }
 });
 
