@@ -37,7 +37,7 @@ const User = sequelize.define(
         role: {
             type: DataTypes.STRING,
             allowNull: true,
-            defaultValue: JSON.stringify(['basic'])
+            defaultValue: JSON.stringify(['general'])
         }
     },
     {
@@ -94,13 +94,21 @@ const createAdminUserByPassword = async (userInput) => {
     }
 };
 
-const findOrCreateUserBySocialMedia = async (user) => {
+const findOrCreateUserBySocialMedia = async (userInputData) => {
     try {
-        if ((user.email || user.socialId) && !user.password) {
-            const email = encryptDataAES256(user.email.trim());
+        if ((userInputData.email || userInputData.socialId) && !userInputData.password) {
+            const user = {
+                name: userInputData.name ? encryptDataAES256(userInputData.name.trim()) : '',
+                email: encryptDataAES256(userInputData.email.trim()),
+                socialMedia: userInputData.socialMedia,
+                socialId: userInputData.socialId,
+                validated: true
+            };
+            console.log(user);
+
             let userDetails = await User.findOne({
                 where: {
-                    [Op.or]: [{ email }, { socialId: user.socialId }]
+                    [Op.or]: [{ email: user.email }, { socialId: user.socialId }]
                 }
             });
 
@@ -110,7 +118,7 @@ const findOrCreateUserBySocialMedia = async (user) => {
             }
             const userData = userDetails.toJSON();
             userData.email = decryptDataAES256(userData.email);
-            userData.name = decryptDataAES256(userData.name);
+            userData.name = userData.name ? decryptDataAES256(userData.name) : '';
             return modifyUserDataMiddleware(userData);
         }
         throw new Error('error in user');
@@ -201,6 +209,7 @@ const markUservalidated = async (id) => {
 const checkUserEmailPass = async (userInput) => {
     try {
         const email = encryptDataAES256(userInput.email.trim());
+        console.log(email);
         const userDetails = await User.findOne({ where: { email } });
         if (!userDetails) {
             return { errorMsg: 'User not exists' };
