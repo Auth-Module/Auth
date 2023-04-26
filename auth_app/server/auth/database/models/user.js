@@ -185,7 +185,6 @@ const findAllUser = async () => {
                 email: decryptDataAES256(v.email),
                 role: v.role
             };
-
         });
         return allUsers;
     } catch (error) {
