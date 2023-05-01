@@ -24,21 +24,21 @@ services:
     networks:
       - auth
   app1:
-    build: ./app1
+    build: ./test_apps/app1
     container_name: app1
     ports:
       - 8081:8081
     networks:
       - auth
   app2:
-    build: ./app2
+    build: ./test_apps/app2
     container_name: app2
     ports:
       - 8082:8082
     networks:
       - auth
   app3:
-    build: ./app3
+    build: ./test_apps/app3
     container_name: app3
     ports:
       - 8083:8000

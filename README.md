@@ -1,29 +1,32 @@
-# Foobar
+## project 
 
-Foobar is a Python library for dealing with word pluralization.
+we have 2 main part in the project
+1. Auth app 
+2. Helper apps by docker-compose ( like DB , App1 , App2 for testing)
 
-## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+### run docker-compose file
 
-```bash
-pip install foobar
-```
+run : `docker-compose up -d` <br>
+this will run 
+1. MySQL server
+2. PhpMyAdmin 
+3. test app1 (written in Nodejs)
+4. test app2 (written in Python)
+5. test app3 (static website - by Nginx)
 
-## Usage
 
-```python
-import foobar
+# Auth App
 
-# returns 'words'
-foobar.pluralize('word')
+the Main project is in folder : auth_app <br>
+the documentation for auth app , is in folder :  auth_app <br>
+** before running the authapp , we will run other test app.
 
-# returns 'geese'
-foobar.pluralize('goose')
+get into folder : auth_app <br>
+run command: `npm install`  <br>
+run command: `npm run start`  <br>
 
-# returns 'phenomenon'
-foobar.singularize('phenomena')
-```
+
 
 ## Contributing
 
