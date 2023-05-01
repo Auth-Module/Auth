@@ -30,15 +30,22 @@ const getProxy = () => {
 };
 
 const proxyURLRewrite = (currentURL) => {
-    let urlDestination = '';
+    console.log(currentURL);
+    let urlDestination = null;
     if (currentURL.includes('favicon.ico')) {
-        return '';
+        return null;
     }
     // eslint-disable-next-line consistent-return
     Object.keys(proxyServers.settings).forEach((subURL) => {
         if (currentURL.includes(subURL)) {
-            const remainingURL = currentURL.split(subURL)[1];
-            urlDestination = proxyServers.settings[subURL] + remainingURL;
+            let remainingURL = currentURL.split(subURL)[1];
+            if (remainingURL.charAt(0) !== '/') {
+                remainingURL = `/${remainingURL}`;
+            }
+            urlDestination = {
+                url: proxyServers.settings[subURL].destination + remainingURL,
+                scope: proxyServers.settings[subURL].scope
+            };
         }
     });
     return urlDestination;

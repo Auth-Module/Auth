@@ -8,6 +8,7 @@ const editProxy = (data) => {
             let source = v.source.trim();
             source = source.endsWith('/') ? source.slice(0, -1) : source;
             source = source.startsWith('/') ? source.slice(1) : source;
+            source = source || '/';
             // edit destination
             let destination = v.destination.trim();
             destination = destination.endsWith('/') ? destination.slice(0, -1) : destination;
