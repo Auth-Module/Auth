@@ -6,7 +6,7 @@ const {
     findUserById,
     markUservalidated,
     checkUserEmailPass
-} = require('../../database/models/user');
+} = require('../../../database/models/user');
 const validationError = require('../../helper/validateUser');
 const { Sha512Encryption } = require('../../helper/encryption');
 const { signupVerificationEmail } = require('../../mailer/mailer');
@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
                     userName: user.name || ''
                 };
                 // creating session
-                const sessionToken = session.createSessionUser(sessionUserData);
+                const sessionToken = await session.createSessionUser(sessionUserData);
                 // if we choose http only cookie
                 const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
                 if (process.env.SESSION_TOKEN === 'http-only-cookie') {

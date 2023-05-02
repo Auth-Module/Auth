@@ -9,9 +9,12 @@ const app = express();
 // ================ connecting DB =======================
 // the connction file is inside auth/databse folder
 // ======================================================
-const connectDB = require('./server/auth/database/connectDB');
+const { connectDB, loadDB } = require('./server/database/startDB');
 
 connectDB();
+loadDB();
+
+
 
 // ================ cookie parser =======================
 // setting up cookie parser to get session cookie

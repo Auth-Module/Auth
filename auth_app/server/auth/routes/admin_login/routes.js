@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const validationError = require('../../helper/validateUser');
-const { checkUserEmailPass } = require('../../database/models/user');
+const { checkUserEmailPass } = require('../../../database/models/user');
 const session = require('../../../session/index');
 
 router.post('/login', async (req, res) => {
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
                     userName: user.name || ''
                 };
                 // creating session
-                const sessionToken = session.createSessionUser(sessionUserData);
+                const sessionToken = await session.createSessionUser(sessionUserData);
                 // if we choose http only cookie
                 const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
                 if (process.env.SESSION_TOKEN === 'http-only-cookie') {
