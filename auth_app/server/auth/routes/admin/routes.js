@@ -4,7 +4,7 @@ const router = express.Router();
 const proxyURLError = require('../../helper/validateProxy');
 const proxy = require('../../../proxy/index');
 const editProxy = require('../../helper/editProxyReq');
-const { findAllUser } = require('../../database/models/user');
+const { findAllUser } = require('../../../database/models/user');
 const { allLoggedinUsers } = require('../../../session/index');
 
 router.get('/proxy', async (req, res) => {
@@ -28,7 +28,7 @@ router.put('/proxy', async (req, res) => {
         if (proxyError) {
             res.status(401).send(proxyError);
         } else {
-            const status = proxy.updateProxy(proxyValue);
+            const status = await proxy.updateProxy(proxyValue);
             if (status) {
                 res.send({ success: 1 });
             } else {

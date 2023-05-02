@@ -1,19 +1,21 @@
-const fs = require('fs');
+const { getAllProxys, saveProxy } = require('../database/models/proxy');
 
 const proxyServers = {
     settings: {}
 };
 
-const updateProxy = (proxy) => {
+const updateProxy = async (proxy) => {
     const temp = {};
     if (Array.isArray(proxy)) {
-        proxy.forEach((v) => {
+        proxy.forEach(async (v) => {
             const source = v.source.trim();
             const destination = v.destination.trim();
             const scope = v.scope || [];
             if (source && destination) {
                 temp[source] = { destination, scope };
             }
+            const proxySavingStatus = await saveProxy({ source, destination, scope });
+            console.log('proxySavingStatus', source, proxySavingStatus);
         });
     } else {
         console.log('proxy is not an Array', proxy);
@@ -30,7 +32,6 @@ const getProxy = () => {
 };
 
 const proxyURLRewrite = (currentURL) => {
-    console.log(currentURL);
     let urlDestination = null;
     if (currentURL.includes('favicon.ico')) {
         return null;
@@ -51,34 +52,22 @@ const proxyURLRewrite = (currentURL) => {
     return urlDestination;
 };
 
-const getProxyDataFromFile = async () => {
+const loadProxyDataFromDB = async () => {
     try {
-        // reading file and saving the file sesion into variable
-        const proxyString = await fs.promises.readFile('proxy.json');
-        if (proxyString) {
-            const proxyValue = JSON.parse(proxyString);
-            proxyServers.settings = proxyValue;
+        const allProxies = await getAllProxys();
+        if (allProxies.length > 0) {
+            allProxies.forEach((v) => {
+                const { source, destination, scope } = v;
+                proxyServers.settings[source] = { destination, scope };
+            });
         }
     } catch (err) {
         console.error('Error occurred while reading/writing directory!', err.message);
     }
 };
-getProxyDataFromFile();
-
-const saveProxyDataOnDisk = async () => {
-    try {
-        // writing teh session data into json file
-        setInterval(async () => {
-            await fs.promises.writeFile('proxy.json', JSON.stringify(proxyServers.settings));
-        }, 5000);
-    } catch (err) {
-        console.error('Error occurred while reading/writing directory!', err);
-    }
-};
-
-saveProxyDataOnDisk();
 
 const proxy = {
+    loadProxyDataFromDB,
     updateProxy,
     getProxy,
     proxyURLRewrite

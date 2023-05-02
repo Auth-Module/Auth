@@ -4,7 +4,7 @@ const router = express.Router();
 const axios = require('axios');
 const passport = require('passport');
 const MicrosoftStrategy = require('passport-microsoft').Strategy;
-const { findOrCreateUserBySocialMedia } = require('../../database/models/user');
+const { findOrCreateUserBySocialMedia } = require('../../../database/models/user');
 const session = require('../../../session/index');
 
 passport.use(
@@ -60,7 +60,7 @@ router.get(
             };
 
             // creating session
-            const sessionToken = session.createSessionUser(sessionUserData);
+            const sessionToken = await session.createSessionUser(sessionUserData);
             // if we choose http only cookie
             const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
             if (process.env.SESSION_TOKEN === 'http-only-cookie') {

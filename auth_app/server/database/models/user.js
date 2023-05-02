@@ -4,7 +4,7 @@ const {
     Sha512Encryption,
     encryptDataAES256,
     decryptDataAES256
-} = require('../../helper/encryption');
+} = require('../../auth/helper/encryption');
 
 const User = sequelize.define(
     'User',
