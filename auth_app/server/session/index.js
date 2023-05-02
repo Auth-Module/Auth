@@ -1,4 +1,3 @@
-const fs = require('fs');
 const sha512Encryption = require('./helper/encryption');
 const { getAllSessions, saveSession } = require('../database/models/session');
 
@@ -10,28 +9,27 @@ const sessionData = {
 const createSessionUser = async (userDetails) => {
     if (userDetails.id || userDetails.userId) {
         const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
-        const currentTime = Math.floor(Date.now() / 1000);
-        const sessionEndTime = currentTime + parseInt(sessionDuration, 10) * 60;
-        const user = { ...userDetails, validtill: sessionEndTime };
+        const sessionEndTime = Math.floor(Date.now() / 1000) + parseInt(sessionDuration, 10) * 60;
+
+        const user = {
+            userid: userDetails.id || userDetails.userId,
+            role: userDetails.role || '',
+            userName: userDetails.userName || '',
+            userEmail: userDetails.userEmail || '',
+            validtill: sessionEndTime
+        };
+
         const hash = sha512Encryption(
             user,
             process.env.SESSION_ENCRYPTION,
             process.env.SESSION_ENCRYPTION_ROUND
         );
+
         sessionData.sessionKey[hash] = { ...user };
-        const userId = userDetails.id || userDetails.userId;
-        sessionData.userIds[userId] = hash;
-        const isSesssionSaaved = await saveSession({
-            userid: userId,
-            sessioKey: hash,
-            userDetails: {
-                role: user.role || '',
-                userName: user.userName || '',
-                userEmail: user.userEmail || ''
-            },
-            validtill: sessionEndTime
-        });
-        console.log('Sesssion Saved', hash, isSesssionSaaved);
+        sessionData.userIds[user.userid] = hash;
+
+        const isSesssionSaaved = await saveSession({ ...user, sessioKey: hash });
+        console.log('Sesssion Saved', isSesssionSaaved);
         return hash;
     }
     throw new Error('userId is needed');
@@ -44,7 +42,8 @@ const getSessionUser = (sessionId) => {
     const currentTime = Math.floor(Date.now() / 1000);
     const userdata = sessionData.sessionKey[sessionId];
     if (userdata && parseInt(userdata.validtill, 10) > currentTime) {
-        return userdata;
+        const { userid, validtill, userDetails } = userdata;
+        return { userid, validtill, ...userDetails };
     }
     return null;
 };
@@ -57,9 +56,23 @@ const endSession = (sessionId) => {
     }
 };
 
-const modifySessionUser = (userDetails) => {
-    return userDetails;
+const modifySessionUser = async (userDetails) => {
+    let status = false;
+    const userid = parseInt(userDetails.id || userDetails.userId || 0, 10);
+    if (userid) {
+        const sessionHash = sessionData.userIds[userid];
+        if (parseInt(sessionData.sessionKey[sessionHash].userid, 10) === userid) {
+            const userSessionDetails = sessionData.sessionKey[sessionHash];
+            if (userSessionDetails.role) {
+                userSessionDetails.role = userDetails.role;
+                status = await saveSession({ ...userSessionDetails, role: userDetails.role });
+                console.log(status);
+            }
+        }
+    }
+    return status;
 };
+
 const allLoggedinUsers = () => {
     return Object.keys(sessionData.userIds);
 };
