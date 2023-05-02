@@ -28,11 +28,12 @@ const Session = sequelize.define(
 
 const saveSession = async (session) => {
     try {
+        const { userid, validtill, sessioKey, ...userDetails } = session;
         const userSession = {
-            userid: session.userid,
-            sessioKey: session.sessioKey,
-            userDetails: JSON.stringify(session.userDetails),
-            validtill: new Date(session.validtill * 1000)
+            userid,
+            sessioKey,
+            userDetails: JSON.stringify(userDetails),
+            validtill: new Date(validtill * 1000)
         };
 
         let sessionDetails = await Session.findOne({ where: { userid: userSession.userid } });

@@ -108,6 +108,90 @@
                     </div>
                 </div>
             </nav>
+
+            <!-- user modal view -->
+            <div class="modal" tabindex="-1" id="userDetailsModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">User Details</h5>
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        <div class="modal-body">
+                            <from @submit.prevent="updateUser">
+                                <div class="input-group flex-nowrap">
+                                    <span
+                                        class="input-group-text"
+                                        id="addon-wrapping"
+                                        style="width: 105px"
+                                        >Name</span
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="/xyz"
+                                        aria-describedby="addon-wrapping"
+                                        v-model="modalUser.name"
+                                        disabled
+                                    />
+                                </div>
+                                <div class="input-group flex-nowrap">
+                                    <span
+                                        class="input-group-text"
+                                        id="addon-wrapping"
+                                        style="width: 105px"
+                                        >Email</span
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="/xyz"
+                                        aria-describedby="addon-wrapping"
+                                        v-model="modalUser.email"
+                                        disabled
+                                    />
+                                </div>
+                                <div class="input-group flex-nowrap">
+                                    <span
+                                        class="input-group-text"
+                                        id="addon-wrapping"
+                                        style="width: 105px"
+                                        >Role</span
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="/xyz"
+                                        aria-describedby="addon-wrapping"
+                                        v-model="modalUser.role"
+                                    />
+                                </div>
+                            </from>
+                            <div class="d-flex" style="justify-content: center; padding: 10px; color: green" v-if="modalUserEditStatus ===true ">
+                                Data saved successfully
+                            </div>
+                            <div class="d-flex" style="justify-content: center; padding: 10px; color: red" v-if="modalUserEditStatus === false ">
+                                Data not saved not , try after some time
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                            <button type="submit" class="btn btn-primary" @click="updateUser">
+                                Update user
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- user modal view end-->
+
             <div class="container-fluid mx-0 px-0 my-2">
                 <div class="row">
                     <div class="col-md-5 col-sm-11" style="background-color: #ececec; height: 100%">
@@ -187,6 +271,12 @@
                                 </button>
                             </div>
                         </from>
+                        <div class="d-flex" style="justify-content: center; padding: 10px; color: green" v-if="proxyEditStatus ===true ">
+                            Data saved successfully
+                        </div>
+                        <div class="d-flex" style="justify-content: center; padding: 10px; color: red" v-if="proxyEditStatus === false ">
+                            Data not saved not , try after some time
+                        </div>
                     </div>
 
                     <div
@@ -200,17 +290,32 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Role</th>
+                                    <th scope="col">view</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="user in allusers">
-                                    <td> 
-                                        <span v-if="currentLogInUsers.includes(user.id)" style="color:#598d59"> Online </span>
+                                    <td>
+                                        <span
+                                            v-if="currentLogInUsers.includes(user.id)"
+                                            style="color: #598d59"
+                                        >
+                                            Online
+                                        </span>
                                         <span v-else> Offline </span>
                                     </td>
                                     <td>{{ user.name }}</td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.modifiedRole }}</td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-primary btn-sm"
+                                            @click="openModal(user)"
+                                        >
+                                            +
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -233,29 +338,63 @@
                     return {
                         baseURL: '',
                         proxy: [],
+                        proxyEditStatus : null,
                         error: '',
                         allusers: '',
-                        currentLogInUsers: []
+                        currentLogInUsers: [],
+                        modalUser: {
+                            name: '',
+                            email: '',
+                            role: ''
+                        },
+                        modalUserEditStatus : null,
                     };
                 },
                 methods: {
+                    openModal: function (user) {
+                        this.modalUser = { ...user };
+                        this.modalUser.role = this.modalUser.role.join();
+                        console.log(this.modalUser);
+                        const myModal = new bootstrap.Modal(
+                            document.getElementById('userDetailsModal')
+                        );
+                        myModal.show();
+                    },
+                    updateUser: async function () {
+                        try {
+                            const patch_url = this.baseURL + '/auth/admin/action/user';
+                            const newUserData = {
+                                id: this.modalUser.id,
+                                role: this.modalUser.role.split(',')
+                            };
+                            const response = await axios.patch(patch_url, newUserData);
+                            if(response.data.status){
+                                this.modalUserEditStatus = true
+                            } else{
+                                this.modalUserEditStatus = false
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            this.modalUserEditStatus = false
+                        }
+                    },
                     updateProxy: async function () {
                         try {
                             const post_url = this.baseURL + '/auth/admin/action/proxy';
                             const response = await axios.put(post_url, {
                                 proxy: JSON.stringify(this.proxy)
                             });
-                            if (response.data?.success && response.data?.userId) {
-                                this.login_success = true;
+                            if (response.data?.success === 1) {
+                                this.proxyEditStatus =true;
                             } else {
-                                this.error += 'Error, Please refresh this page and  try again ';
+                                this.proxyEditStatus =false;
                             }
                         } catch (err) {
                             console.log(err);
                             if (err?.response?.data?.errorMsg) {
-                                this.error += err.response.data.errorMsg;
+                                this.proxyEditStatus =false;
                             } else {
-                                this.error += 'Error, Please try again after some time';
+                                this.proxyEditStatus =false;
                             }
                         }
                     },
@@ -269,8 +408,9 @@
                                     for (const property in response.data.proxyValue) {
                                         arr.push({
                                             source: property,
-                                            destination: response.data.proxyValue[property].destination,
-                                            scope : response.data.proxyValue[property].scope.join()
+                                            destination:
+                                                response.data.proxyValue[property].destination,
+                                            scope: response.data.proxyValue[property].scope.join()
                                         });
                                     }
                                     this.proxy = arr;
@@ -299,7 +439,7 @@
                                     element.modifiedRole = element.role.join();
                                 });
                                 this.allusers = response.data.users;
-                                console.log(this.allusers);
+                                // console.log(this.allusers);
 
                                 if (response.data.currentUsers) {
                                     this.currentLogInUsers = response.data.currentUsers.map((v) =>

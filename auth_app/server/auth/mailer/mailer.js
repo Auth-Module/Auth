@@ -29,7 +29,7 @@ const sendMail = async (subject, toEmail, htmlContent, textContent) => {
 };
 const signupVerificationEmail = async (userEmail, validationcode) => {
     try {
-        console.log(userEmail, validationcode);
+        // console.log(userEmail, validationcode);
         if (userEmail && validationcode) {
             const subject = 'Email Verification';
             const toEmail = userEmail;

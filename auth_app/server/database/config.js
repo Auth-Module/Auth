@@ -1,7 +1,9 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-    dialect: process.env.DB_DIALECT,
+const dbString = `mariadb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+// console.log('dbString', dbString);
+
+const sequelize = new Sequelize(dbString, {
     pool: {
         max: 5,
         min: 0,

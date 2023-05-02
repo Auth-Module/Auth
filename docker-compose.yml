@@ -19,33 +19,48 @@ services:
     restart: always
     ports:
       - 8080:80
+    depends_on:
+      - db
     environment:
       - PMA_ARBITRARY=1
-    networks:
-      - auth
-  app1:
-    build: ./test_apps/app1
-    container_name: app1
-    ports:
-      - 8081:8081
-    networks:
-      - auth
-  app2:
-    build: ./test_apps/app2
-    container_name: app2
-    ports:
-      - 8082:8082
-    networks:
-      - auth
-  app3:
+   
+      
+  nginxapp:
     build: ./test_apps/app3
-    container_name: app3
+    container_name: nginxapp
+    depends_on:
+      - phpmyadmin
     ports:
-      - 8083:8000
+      - 8000:8000
+    
+
+  nodeapp:
+    build: ./test_apps/app1
+    container_name: nodeapp
+    depends_on:
+      - nginxapp
+    ports:
+      - 8081:8000
+    
+  pyapp:
+    build: ./test_apps/app2
+    container_name: pyapp
+    
+    ports:
+      - 8082:8000
     networks:
       - auth
 
-  
+  authapp:
+    build: ./auth_app
+    container_name: authapp
+    env_file:
+      - .env
+    ports:
+      - 80:3000
+    networks:
+      - auth
+
 networks:
   auth:
 
