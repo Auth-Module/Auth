@@ -1,12 +1,13 @@
 const fs = require('fs');
 const sha512Encryption = require('./helper/encryption');
+const { getAllSessions, saveSession } = require('../database/models/session');
 
 const sessionData = {
     sessionKey: {},
     userIds: {}
 };
 
-const createSessionUser = (userDetails) => {
+const createSessionUser = async (userDetails) => {
     if (userDetails.id || userDetails.userId) {
         const sessionDuration = process.env.SESSION_DURATION_MINUTES || 600;
         const currentTime = Math.floor(Date.now() / 1000);
@@ -20,6 +21,17 @@ const createSessionUser = (userDetails) => {
         sessionData.sessionKey[hash] = { ...user };
         const userId = userDetails.id || userDetails.userId;
         sessionData.userIds[userId] = hash;
+        const isSesssionSaaved = await saveSession({
+            userid: userId,
+            sessioKey: hash,
+            userDetails: {
+                role: user.role || '',
+                userName: user.userName || '',
+                userEmail: user.userEmail || ''
+            },
+            validtill: sessionEndTime
+        });
+        console.log('Sesssion Saved', hash, isSesssionSaaved);
         return hash;
     }
     throw new Error('userId is needed');
@@ -52,40 +64,28 @@ const allLoggedinUsers = () => {
     return Object.keys(sessionData.userIds);
 };
 
+const getSessionDataFromDB = async () => {
+    try {
+        const savedSessions = await getAllSessions();
+        if (savedSessions.length > 0) {
+            savedSessions.forEach((v) => {
+                const { sessioKey, userid, userDetails, validtill } = v;
+                sessionData.sessionKey[sessioKey] = { userid, validtill, ...userDetails };
+                sessionData.userIds[userid] = sessioKey;
+            });
+        }
+    } catch (err) {
+        console.error('Error occurred while reading/writing directory!', err);
+    }
+};
+
 const session = {
+    getSessionDataFromDB,
     createSessionUser,
     getSessionUser,
     modifySessionUser,
     endSession,
     allLoggedinUsers
 };
-
-const getSessionDataFromFile = async () => {
-    try {
-        // reading file and saving the file sesion into variable
-        const sessionString = await fs.promises.readFile('session.json');
-        if (sessionString) {
-            const sessionValue = JSON.parse(sessionString);
-            sessionData.sessionKey = sessionValue.sessionKey;
-            sessionData.userIds = sessionValue.userIds;
-        }
-    } catch (err) {
-        console.error('Error occurred while reading/writing directory!', err);
-    }
-};
-getSessionDataFromFile();
-
-const saveSessionOnDisk = async () => {
-    try {
-        // writing teh session data into json file
-        setInterval(async () => {
-            await fs.promises.writeFile('session.json', JSON.stringify(sessionData));
-        }, 5000);
-    } catch (err) {
-        console.error('Error occurred while reading/writing directory!', err);
-    }
-};
-
-saveSessionOnDisk();
 
 module.exports = session;
