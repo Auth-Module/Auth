@@ -85,8 +85,9 @@ app.get('/*', async (req, res) => {
 // setting up server according to port
 // ===============================================================
 const port = process.env.SERVER_PORT || 3000;
-
-
+app.listen(port, () => {
+    console.log(`Example app listening on port http://localhost:${port}`);
+});
 
 // ================ connecting DB =======================
 // the connction file is inside auth/databse folder
@@ -97,10 +98,7 @@ const { connectDB, loadDB } = require('./server/database/startDB');
 
 setTimeout(()=>{
     connectDB();
-    loadDB();
-    app.listen(port, () => {
-        console.log(`Example app listening on port http://localhost:${port}`);
-    });
+    loadDB();  
 } , 5000)
 
 
