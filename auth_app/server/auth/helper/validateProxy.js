@@ -1,5 +1,5 @@
 function isUrl(str) {
-    if (str.includes('http://localhost:') || str.includes('https://localhost:')) {
+    if (str.includes('http://localhost') || str.includes('https://localhost')) {
         return true;
     }
     const pattern = new RegExp(
