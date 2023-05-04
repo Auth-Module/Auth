@@ -206,6 +206,23 @@ const markUservalidated = async (id) => {
     }
 };
 
+const updateUserRole = async (id, role) => {
+    try {
+        const userDetails = await User.findByPk(id);
+        if (!userDetails) {
+            return { errorMsg: 'user error' };
+        }
+        userDetails.role = JSON.stringify(role);
+        await userDetails.save();
+        const userData = userDetails.toJSON();
+        userData.email = decryptDataAES256(userData.email);
+        userData.name = decryptDataAES256(userData.name);
+        return modifyUserDataMiddleware(userData);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 const checkUserEmailPass = async (userInput) => {
     try {
         const email = encryptDataAES256(userInput.email.trim());
@@ -246,6 +263,7 @@ module.exports = {
     createUserByPassword,
     findUserById,
     findAllUser,
+    updateUserRole,
     markUservalidated,
     checkUserEmailPass
 };

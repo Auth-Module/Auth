@@ -6,15 +6,6 @@ const axios = require('axios');
 
 const app = express();
 
-// ================ connecting DB =======================
-// the connction file is inside auth/databse folder
-// ======================================================
-const { connectDB, loadDB } = require('./server/database/startDB');
-
-connectDB();
-loadDB();
-
-
 
 // ================ cookie parser =======================
 // setting up cookie parser to get session cookie
@@ -89,12 +80,26 @@ app.get('/*', async (req, res) => {
     }
 });
 
+
 // ========================== Server setup =======================
 // setting up server according to port
 // ===============================================================
 const port = process.env.SERVER_PORT || 3000;
-// eslint-disable-next-line no-underscore-dangle
-
 app.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}`);
 });
+
+// ================ connecting DB =======================
+// the connction file is inside auth/databse folder
+// ======================================================
+const { connectDB, loadDB } = require('./server/database/startDB');
+
+// ================== Wait fro 10 second to on the Db ===============//
+
+setTimeout(()=>{
+    connectDB();
+    loadDB();  
+} , 5000)
+
+
+

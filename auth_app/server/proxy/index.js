@@ -15,7 +15,7 @@ const updateProxy = async (proxy) => {
                 temp[source] = { destination, scope };
             }
             const proxySavingStatus = await saveProxy({ source, destination, scope });
-            console.log('proxySavingStatus', source, proxySavingStatus);
+            console.log('proxySavingStatus', proxySavingStatus);
         });
     } else {
         console.log('proxy is not an Array', proxy);
