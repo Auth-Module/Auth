@@ -23,31 +23,24 @@ services:
       - db
     environment:
       - PMA_ARBITRARY=1
-   
-      
-  nginxapp:
-    build: ./test_apps/app3
-    container_name: nginxapp
-    depends_on:
-      - phpmyadmin
-    ports:
-      - 8000:8000
     
+  pyapp:
+    build: ./test_apps/app2
+    container_name: pyapp
+    depends_on:
+      - db
+    expose:
+      - 8002
+    networks:
+      - auth
 
   nodeapp:
     build: ./test_apps/app1
     container_name: nodeapp
     depends_on:
-      - nginxapp
+      - db
     ports:
-      - 8081:8000
-    
-  pyapp:
-    build: ./test_apps/app2
-    container_name: pyapp
-    
-    ports:
-      - 8082:8000
+      - 8001
     networks:
       - auth
 
@@ -57,9 +50,20 @@ services:
     env_file:
       - .env
     ports:
-      - 80:3000
+      - 8000:3000
     networks:
       - auth
+
+  nginxapp:
+    build: ./test_apps/app3
+    container_name: nginxapp
+    depends_on:
+      - authapp
+      - pyapp
+      - nodeapp
+      - db
+    ports:
+      - 80:80
 
 networks:
   auth:
