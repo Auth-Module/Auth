@@ -39,10 +39,10 @@ app.get('/*', async (req, res) => {
             res.redirect('/auth/login');
         } else {
             const proxyData = proxy.proxyURLRewrite(req.url);
+            console.log(proxyData)
             if (proxyData) {
                 const isScoped =
                     proxyData && proxyData.scope.some((v) => sessionUser.role.indexOf(v) !== -1);
-
                 if (!isScoped) {
                     res.send({ status: 'not authorized' });
                 } else if (proxyData.url) {
@@ -57,7 +57,7 @@ app.get('/*', async (req, res) => {
                     if (responseData.data) {
                         res.send(responseData.data);
                     } else {
-                        res.send({ status: 'ok' });
+                        res.send({ status: 'no data found' });
                     }
                 } else {
                     res.send({ error: 'Page not found' });
@@ -68,11 +68,11 @@ app.get('/*', async (req, res) => {
         }
     } catch (error) {
         if (error.response) {
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
+            console.log("error data",error.response.data);
+            console.log("error status",error.response.status);
+            console.log("error headers",error.response.headers);
         } else if (error.request) {
-            console.log(error.request);
+            console.log("error request",error.request);
         } else {
             console.log('Error', error.message);
         }
@@ -99,7 +99,7 @@ const { connectDB, loadDB } = require('./server/database/startDB');
 setTimeout(()=>{
     connectDB();
     loadDB();  
-} , 5000)
+} , 2000)
 
 
 
