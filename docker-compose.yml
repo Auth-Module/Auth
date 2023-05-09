@@ -14,15 +14,12 @@ services:
     networks:
       - auth
 
-  phpmyadmin:
-    image: phpmyadmin
+  adminer:
+    image: adminer
     restart: always
-    expose:
-      - 80
-    depends_on:
-      - db
-    environment:
-      - PMA_ARBITRARY=1
+    container_name: adminer
+    ports:
+      - 8080:8080
     networks:
       - auth
     
@@ -56,7 +53,7 @@ services:
       - nodeapp
       - db
     ports:
-      - 80:80
+      - 8000:8000
     networks:
       - auth
 
