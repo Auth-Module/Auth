@@ -42,8 +42,7 @@ const getSessionUser = (sessionId) => {
     const currentTime = Math.floor(Date.now() / 1000);
     const userdata = sessionData.sessionKey[sessionId];
     if (userdata && parseInt(userdata.validtill, 10) > currentTime) {
-        const { userid, validtill, userDetails } = userdata;
-        return { userid, validtill, ...userDetails };
+        return { ...userdata };
     }
     return null;
 };
@@ -84,6 +83,7 @@ const getSessionDataFromDB = async () => {
             savedSessions.forEach((v) => {
                 const { sessioKey, userid, userDetails, validtill } = v;
                 sessionData.sessionKey[sessioKey] = { userid, validtill, ...userDetails };
+                // console.log(sessionData.sessionKey[sessioKey]);
                 sessionData.userIds[userid] = sessioKey;
             });
         }
